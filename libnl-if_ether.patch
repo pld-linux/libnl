@@ -1,0 +1,20 @@
+--- libnl-0.5.0/lib/route/filter.c~	2005-04-04 23:08:04.000000000 +0000
++++ libnl-0.5.0/lib/route/filter.c	2005-06-19 06:52:40.896839224 +0000
+@@ -40,6 +40,7 @@
+ #include <netlink/route/filter.h>
+ #include <netlink/route/link.h>
+ #include <netlink/route/rtattr.h>
++#include <linux/if_ether.h>
+ 
+ static struct rtnl_filter_ops *filter_ops;
+ 
+--- libnl-0.5.0/lib/helpers.c~	2005-04-04 23:08:04.000000000 +0000
++++ libnl-0.5.0/lib/helpers.c	2005-06-19 06:51:53.461050560 +0000
+@@ -29,6 +29,7 @@
+ #include <netlink/netlink.h>
+ #include <netlink/helpers.h>
+ #include <linux/socket.h>
++#include <linux/if_ether.h>
+ 
+ int nl_debug = 0;
+ 
