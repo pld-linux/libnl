@@ -1,5 +1,5 @@
 Summary:	Netlink library
-Summary(pl):	Biblioteka do obs³ugi netlink
+Summary(pl):	Biblioteka do obs³ugi gniazd netlink
 Name:		libnl
 Version:	0.5.0
 Release:	1
@@ -11,6 +11,8 @@ Patch0:		%{name}-if_ether.patch
 Patch1:		%{name}-no_root.patch
 Patch2:		%{name}-libdir.patch
 URL:		http://people.suug.ch/~tgr/libnl/
+BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -20,8 +22,9 @@ netlink family specific APIs.
 
 %description -l pl
 libnl jest bibliotek± dla aplikacji rozmawiaj±cych z gniazdem
-netlinka. Udostêpnia ³atwy w u¿yciu interfejs do korzystania z
-surowych wiadomo¶ci netlink, a tak¿e API do rodziny netlinka.
+netlink. Udostêpnia ³atwy w u¿yciu interfejs do korzystania z
+surowych wiadomo¶ci netlink, a tak¿e API specyficzne dla rodziny
+gniazd netlink.
 
 %package devel
 Summary:	Header files for libnl library
