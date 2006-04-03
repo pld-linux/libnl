@@ -1,15 +1,15 @@
 Summary:	Netlink library
 Summary(pl):	Biblioteka do obs³ugi gniazd netlink
 Name:		libnl
-Version:	0.5.0
-Release:	1
+Version:	1.0
+%define pre pre5
+Release:	0.%{pre}.1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	c58ec5032f393f569ef7f489436651b3
+Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
+# Source0-md5:	2cece8968bb36b4cc34b907b6e3c2178
 Patch0:		%{name}-if_ether.patch
 Patch1:		%{name}-no_root.patch
-Patch2:		%{name}-libdir.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -51,10 +51,9 @@ Static libnl library.
 Statyczna biblioteka libnl.
 
 %prep
-%setup -q
-%patch0 -p1
+%setup -q -n %{name}-%{version}-%{pre}
+#%patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 %{__aclocal}
@@ -78,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc ChangeLog
-%attr(755,root,root) %{_libdir}/lib*.so.*.*.*
+%attr(755,root,root) %{_libdir}/lib*.so.*.*-*
 
 %files devel
 %defattr(644,root,root,755)
