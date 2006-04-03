@@ -8,6 +8,7 @@ License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
 # Source0-md5:	2cece8968bb36b4cc34b907b6e3c2178
+Source1:	%{name}-1.pc
 Patch0:		%{name}-if_ether.patch
 Patch1:		%{name}-no_root.patch
 URL:		http://people.suug.ch/~tgr/libnl/
@@ -64,9 +65,12 @@ Statyczna biblioteka libnl.
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+install %{SOURCE1} $RPM_BUILD_ROOT%{_pkgconfigdir}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -83,3 +87,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_includedir}/netlink
+%{_pkgconfigdir}/*.pc
