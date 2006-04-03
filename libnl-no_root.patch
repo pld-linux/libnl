@@ -1,21 +1,29 @@
---- libnl-0.5.0/lib/Makefile~	2005-04-04 23:08:04.000000000 +0000
-+++ libnl-0.5.0/lib/Makefile	2005-06-19 06:55:59.503646400 +0000
-@@ -68,7 +68,7 @@
- 
+diff -ur libnl-1.0-pre5-o/include/Makefile libnl-1.0-pre5/include/Makefile
+--- libnl-1.0-pre5-o/include/Makefile	2005-11-02 10:29:06.000000000 -0700
++++ libnl-1.0-pre5/include/Makefile	2006-04-03 12:33:38.000000000 -0600
+@@ -27,7 +27,7 @@
  install:
- 	mkdir -p $(DESTDIR)$(prefix)/lib/
--	install -o root -g root -m 0644 $(OUT_SLIB) $(DESTDIR)$(prefix)/lib
-+	install -m 0644 $(OUT_SLIB) $(DESTDIR)$(prefix)/lib
- 	rm -f $(DESTDIR)$(prefix)/lib/$(LN1_SLIB) ; \
- 	$(LN) -s $(DESTDIR)$(prefix)/lib/$(OUT_SLIB) $(DESTDIR)$(prefix)/lib/$(LN1_SLIB)
- 	rm -f $(DESTDIR)$(prefix)/lib/$(LN_SLIB) ; \
---- libnl-0.5.0/include/Makefile~	2005-04-04 23:08:04.000000000 +0000
-+++ libnl-0.5.0/include/Makefile	2005-06-19 06:55:50.125072160 +0000
-@@ -37,5 +37,5 @@
- 
- install:
- 	mkdir -p $(DESTDIR)$(prefix)/include/netlink/route/
+ 	mkdir -p $(DESTDIR)$(prefix)/include/netlink/route/sch/
+ 	mkdir -p $(DESTDIR)$(prefix)/include/netlink/route/cls/
 -	install -o root -g root -m 0644 netlink/*.h $(DESTDIR)$(prefix)/include/netlink/
 -	install -o root -g root -m 0644 netlink/route/*.h $(DESTDIR)$(prefix)/include/netlink/route/
+-	install -o root -g root -m 0644 netlink/route/sch/*.h $(DESTDIR)$(prefix)/include/netlink/route/sch/
+-	install -o root -g root -m 0644 netlink/route/cls/*.h $(DESTDIR)$(prefix)/include/netlink/route/cls/
 +	install -m 0644 netlink/*.h $(DESTDIR)$(prefix)/include/netlink/
 +	install -m 0644 netlink/route/*.h $(DESTDIR)$(prefix)/include/netlink/route/
++	install -m 0644 netlink/route/sch/*.h $(DESTDIR)$(prefix)/include/netlink/route/sch/
++	install -m 0644 netlink/route/cls/*.h $(DESTDIR)$(prefix)/include/netlink/route/cls/
+Only in libnl-1.0-pre5/include: Makefile.orig
+diff -ur libnl-1.0-pre5-o/lib/Makefile libnl-1.0-pre5/lib/Makefile
+--- libnl-1.0-pre5-o/lib/Makefile	2005-11-02 10:29:06.000000000 -0700
++++ libnl-1.0-pre5/lib/Makefile	2006-04-03 12:33:12.000000000 -0600
+@@ -58,7 +58,7 @@
+ 
+ install:
+ 	mkdir -p $(DESTDIR)$(LIBDIR)/
+-	install -o root -g root -m 0644 $(OUT_SLIB) $(DESTDIR)$(LIBDIR)
++	install -m 0644 $(OUT_SLIB) $(DESTDIR)$(LIBDIR)
+ 	rm -f $(DESTDIR)$(LIBDIR)/$(LN1_SLIB) ; \
+ 	$(LN) -s $(OUT_SLIB) $(DESTDIR)$(LIBDIR)/$(LN1_SLIB)
+ 	rm -f $(DESTDIR)$(LIBDIR)/$(LN_SLIB) ; \
+Only in libnl-1.0-pre5/lib: Makefile.orig
