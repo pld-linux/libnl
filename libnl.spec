@@ -9,8 +9,7 @@ Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
 # Source0-md5:	2cece8968bb36b4cc34b907b6e3c2178
 Source1:	%{name}-1.pc
-Patch0:		%{name}-if_ether.patch
-Patch1:		%{name}-no_root.patch
+Patch0:		%{name}-no_root.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -53,8 +52,7 @@ Statyczna biblioteka libnl.
 
 %prep
 %setup -q -n %{name}-%{version}-%{pre}
-#%patch0 -p1
-%patch1 -p1
+%patch0 -p1
 
 %build
 %{__aclocal}
