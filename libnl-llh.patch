@@ -35,3 +35,36 @@
  
  /**
   * @ingroup nl
+--- libnl-1.0-pre5/lib/data.c.orig	2006-10-31 08:14:56.930600500 +0000
++++ libnl-1.0-pre5/lib/data.c	2006-10-31 08:15:16.895848250 +0000
+@@ -18,7 +18,7 @@
+ #include <netlink-local.h>
+ #include <netlink/netlink.h>
+ #include <netlink/utils.h>
+-#include <linux/socket.h>
++#include <sys/socket.h>
+ 
+ /**
+  * @name General
+--- libnl-1.0-pre5/lib/msg.c.orig	2006-10-31 08:15:00.606830250 +0000
++++ libnl-1.0-pre5/lib/msg.c	2006-10-31 08:15:34.472946750 +0000
+@@ -152,7 +152,7 @@
+ #include <netlink/utils.h>
+ #include <netlink/cache.h>
+ #include <netlink/attr.h>
+-#include <linux/socket.h>
++#include <sys/socket.h>
+ 
+ /**
+  * @name Size Calculations
+--- libnl-1.0-pre5/lib/utils.c.orig	2006-10-31 08:15:04.315062000 +0000
++++ libnl-1.0-pre5/lib/utils.c	2006-10-31 08:15:50.317937000 +0000
+@@ -17,7 +17,7 @@
+ #include <netlink-local.h>
+ #include <netlink/netlink.h>
+ #include <netlink/utils.h>
+-#include <linux/socket.h>
++#include <sys/socket.h>
+ 
+ /**
+  * Debug level
