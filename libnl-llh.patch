@@ -1,0 +1,37 @@
+--- libnl-1.0-pre5/include/netlink-local.h.orig	2006-10-31 08:05:18.369442750 +0000
++++ libnl-1.0-pre5/include/netlink-local.h	2006-10-31 08:06:19.450708000 +0000
+@@ -30,11 +30,7 @@
+ #include <arpa/inet.h>
+ #include <netdb.h>
+ 
+-typedef uint8_t		__u8;
+-typedef uint16_t	__u16;
+-typedef uint32_t	__u32;
+-typedef int32_t		__s32;
+-typedef uint64_t	__u64;
++#include <linux/types.h>
+ 
+ /* local header copies */
+ #include <linux/if.h>
+--- libnl-1.0-pre5/lib/addr.c.orig	2006-10-31 08:04:12.434302000 +0000
++++ libnl-1.0-pre5/lib/addr.c	2006-10-31 08:04:28.735167250 +0000
+@@ -29,7 +29,7 @@
+ #include <netlink/netlink.h>
+ #include <netlink/utils.h>
+ #include <netlink/addr.h>
+-#include <linux/socket.h>
++#include <sys/socket.h>
+ 
+ /* All this DECnet stuff is stolen from iproute2, thanks to whoever wrote
+  * this, probably Alexey. */
+--- libnl-1.0-pre5/lib/attr.c.orig	2006-10-31 08:07:17.453320750 +0000
++++ libnl-1.0-pre5/lib/attr.c	2006-10-31 08:07:27.313005250 +0000
+@@ -15,7 +15,7 @@
+ #include <netlink/addr.h>
+ #include <netlink/attr.h>
+ #include <netlink/msg.h>
+-#include <linux/socket.h>
++#include <sys/socket.h>
+ 
+ /**
+  * @ingroup nl
