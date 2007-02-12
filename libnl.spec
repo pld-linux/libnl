@@ -1,5 +1,5 @@
 Summary:	Netlink library
-Summary(pl):	Biblioteka do obs≥ugi gniazd netlink
+Summary(pl.UTF-8):   Biblioteka do obs≈Çugi gniazd netlink
 Name:		libnl
 Version:	1.0
 %define pre pre6
@@ -19,34 +19,34 @@ libnl is a library for applications dealing with netlink socket. It
 provides an easy to use interface for raw netlink message but also
 netlink family specific APIs.
 
-%description -l pl
-libnl jest bibliotek± dla aplikacji rozmawiaj±cych z gniazdem
-netlink. UdostÍpnia ≥atwy w uøyciu interfejs do korzystania z
-surowych wiadomo∂ci netlink, a takøe API specyficzne dla rodziny
+%description -l pl.UTF-8
+libnl jest bibliotekƒÖ dla aplikacji rozmawiajƒÖcych z gniazdem
+netlink. Udostƒôpnia ≈Çatwy w u≈ºyciu interfejs do korzystania z
+surowych wiadomo≈õci netlink, a tak≈ºe API specyficzne dla rodziny
 gniazd netlink.
 
 %package devel
 Summary:	Header files for libnl library
-Summary(pl):	Pliki nag≥Ûwkowe biblioteki libnl
+Summary(pl.UTF-8):   Pliki nag≈Ç√≥wkowe biblioteki libnl
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
 Header files for libnl library.
 
-%description devel -l pl
-Pliki nag≥Ûwkowe biblioteki libnl.
+%description devel -l pl.UTF-8
+Pliki nag≈Ç√≥wkowe biblioteki libnl.
 
 %package static
 Summary:	Static libnl library
-Summary(pl):	Statyczna biblioteka libnl
+Summary(pl.UTF-8):   Statyczna biblioteka libnl
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static libnl library.
 
-%description static -l pl
+%description static -l pl.UTF-8
 Statyczna biblioteka libnl.
 
 %prep
