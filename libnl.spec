@@ -1,5 +1,5 @@
 Summary:	Netlink library
-Summary(pl.UTF-8):   Biblioteka do obsługi gniazd netlink
+Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.0
 %define pre pre6
@@ -27,7 +27,7 @@ gniazd netlink.
 
 %package devel
 Summary:	Header files for libnl library
-Summary(pl.UTF-8):   Pliki nagłówkowe biblioteki libnl
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libnl
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
@@ -39,7 +39,7 @@ Pliki nagłówkowe biblioteki libnl.
 
 %package static
 Summary:	Static libnl library
-Summary(pl.UTF-8):   Statyczna biblioteka libnl
+Summary(pl.UTF-8):	Statyczna biblioteka libnl
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
