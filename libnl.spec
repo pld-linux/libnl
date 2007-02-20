@@ -3,7 +3,7 @@ Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.0
 %define pre pre6
-Release:	0.%{pre}.1
+Release:	0.%{pre}.2
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
@@ -77,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc ChangeLog
-%attr(755,root,root) %{_libdir}/libnl.so.*.*
+%attr(755,root,root) %{_libdir}/libnl.so.*
 
 %files devel
 %defattr(644,root,root,755)
