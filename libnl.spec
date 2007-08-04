@@ -78,7 +78,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc ChangeLog
 %attr(755,root,root) %{_libdir}/libnl.so.[0-9].[0-9]*
-%ghost %attr(755,root,root) %{_libdir}/libnl.so.[^.]
+%ghost %attr(755,root,root) %{_libdir}/libnl.so.[!.]
 
 %files devel
 %defattr(644,root,root,755)
