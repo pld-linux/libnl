@@ -1,18 +1,19 @@
 Summary:	Netlink library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
+Epoch:		1
 Version:	1.0
-%define pre pre7
+%define pre pre8
 Release:	0.%{pre}.3
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
-# Source0-md5:	db9f6265c370f09defd2d2fa3540758e
+# Source0-md5:	cc54b3ed25ba45d45a966b9355030810
 #Patch0:		%{name}-llh.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	linux-libc-headers >= 7:2.6.20
+BuildRequires:	linux-libc-headers >= 7:2.6.23
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -30,7 +31,7 @@ gniazd netlink.
 Summary:	Header files for libnl library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libnl
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	linux-libc-headers >= 7:2.6.20
 
 %description devel
@@ -43,7 +44,7 @@ Pliki nagłówkowe biblioteki libnl.
 Summary:	Static libnl library
 Summary(pl.UTF-8):	Statyczna biblioteka libnl
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
+Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
 
 %description static
 Static libnl library.
