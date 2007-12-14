@@ -10,6 +10,7 @@ Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
 # Source0-md5:	0f57cb7085dc27e054691bff858613c9
 Patch0:		%{name}-llh.patch
+Patch1:		%{name}-static.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -53,6 +54,7 @@ Statyczna biblioteka libnl.
 %prep
 %setup -q -n %{name}-%{version}-%{pre}
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__aclocal}
@@ -86,3 +88,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl.so
 %{_includedir}/netlink
 %{_pkgconfigdir}/libnl-1.pc
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libnl.a
