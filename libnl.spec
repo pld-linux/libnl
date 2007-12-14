@@ -4,7 +4,7 @@ Name:		libnl
 Epoch:		1
 Version:	1.0
 %define pre pre6
-Release:	0.%{pre}.4
+Release:	0.%{pre}.5
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
