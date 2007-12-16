@@ -1,70 +1,22 @@
---- libnl-1.0-pre5/include/netlink-local.h.orig	2006-10-31 08:05:18.369442750 +0000
-+++ libnl-1.0-pre5/include/netlink-local.h	2006-10-31 08:06:19.450708000 +0000
-@@ -30,11 +30,7 @@
- #include <arpa/inet.h>
- #include <netdb.h>
+--- libnl-1.0-pre8/include/netlink/netlink.h.orig	2007-11-21 18:25:39.000000000 +0100
++++ libnl-1.0-pre8/include/netlink/netlink.h	2007-12-16 21:35:39.178823495 +0100
+@@ -24,7 +24,6 @@
+ #include <linux/netlink.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/genetlink.h>
+-#include <linux/ip_mp_alg.h>
+ #include <linux/netfilter/nfnetlink.h>
+ #include <netlink/types.h>
+ #include <netlink/handlers.h>
+--- libnl-1.0-pre8/lib/route/route_obj.c.orig	2007-11-21 18:25:39.000000000 +0100
++++ libnl-1.0-pre8/lib/route/route_obj.c	2007-12-16 21:52:39.872989541 +0100
+@@ -64,6 +64,9 @@
+ #define ROUTE_ATTR_MP_ALGO   0x040000
+ /** @endcond */
  
--typedef uint8_t		__u8;
--typedef uint16_t	__u16;
--typedef uint32_t	__u32;
--typedef int32_t		__s32;
--typedef uint64_t	__u64;
-+#include <linux/types.h>
++/* (obsolete) multipath routing algorithm */
++#define IP_MP_ALG_NONE 0
++
+ static int route_dump_brief(struct nl_object *a, struct nl_dump_params *p);
  
- /* local header copies */
- #include <linux/if.h>
---- libnl-1.0-pre5/lib/addr.c.orig	2006-10-31 08:04:12.434302000 +0000
-+++ libnl-1.0-pre5/lib/addr.c	2006-10-31 08:04:28.735167250 +0000
-@@ -29,7 +29,7 @@
- #include <netlink/netlink.h>
- #include <netlink/utils.h>
- #include <netlink/addr.h>
--#include <linux/socket.h>
-+#include <sys/socket.h>
- 
- /* All this DECnet stuff is stolen from iproute2, thanks to whoever wrote
-  * this, probably Alexey. */
---- libnl-1.0-pre5/lib/attr.c.orig	2006-10-31 08:07:17.453320750 +0000
-+++ libnl-1.0-pre5/lib/attr.c	2006-10-31 08:07:27.313005250 +0000
-@@ -15,7 +15,7 @@
- #include <netlink/addr.h>
- #include <netlink/attr.h>
- #include <netlink/msg.h>
--#include <linux/socket.h>
-+#include <sys/socket.h>
- 
- /**
-  * @ingroup nl
---- libnl-1.0-pre5/lib/data.c.orig	2006-10-31 08:14:56.930600500 +0000
-+++ libnl-1.0-pre5/lib/data.c	2006-10-31 08:15:16.895848250 +0000
-@@ -18,7 +18,7 @@
- #include <netlink-local.h>
- #include <netlink/netlink.h>
- #include <netlink/utils.h>
--#include <linux/socket.h>
-+#include <sys/socket.h>
- 
- /**
-  * @name General
---- libnl-1.0-pre5/lib/msg.c.orig	2006-10-31 08:15:00.606830250 +0000
-+++ libnl-1.0-pre5/lib/msg.c	2006-10-31 08:15:34.472946750 +0000
-@@ -152,7 +152,7 @@
- #include <netlink/utils.h>
- #include <netlink/cache.h>
- #include <netlink/attr.h>
--#include <linux/socket.h>
-+#include <sys/socket.h>
- 
- /**
-  * @name Size Calculations
---- libnl-1.0-pre5/lib/utils.c.orig	2006-10-31 08:15:04.315062000 +0000
-+++ libnl-1.0-pre5/lib/utils.c	2006-10-31 08:15:50.317937000 +0000
-@@ -17,7 +17,7 @@
- #include <netlink-local.h>
- #include <netlink/netlink.h>
- #include <netlink/utils.h>
--#include <linux/socket.h>
-+#include <sys/socket.h>
- 
- /**
-  * Debug level
+ static void route_constructor(struct nl_object *c)
