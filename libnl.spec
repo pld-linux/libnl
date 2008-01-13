@@ -31,24 +31,13 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libnl
 Group:		Development/Libraries
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	linux-libc-headers >= 7:2.6.20
+Obsoletes:	libnl-static
 
 %description devel
 Header files for libnl library.
 
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki libnl.
-
-%package static
-Summary:	Static libnl library
-Summary(pl.UTF-8):	Statyczna biblioteka libnl
-Group:		Development/Libraries
-Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
-
-%description static
-Static libnl library.
-
-%description static -l pl.UTF-8
-Statyczna biblioteka libnl.
 
 %prep
 %setup -q
