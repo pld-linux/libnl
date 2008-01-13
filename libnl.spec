@@ -2,14 +2,12 @@ Summary:	Netlink library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.0
-%define pre pre8
-Release:	0.%{pre}.3
+Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}-%{pre}.tar.gz
-# Source0-md5:	cc54b3ed25ba45d45a966b9355030810
-Patch0:		%{name}-llh.patch
+Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}.tar.gz
+# Source0-md5:	fd59c63cfa8ad50c8331a48aa252e483
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -53,8 +51,7 @@ Static libnl library.
 Statyczna biblioteka libnl.
 
 %prep
-%setup -q -n %{name}-%{version}-%{pre}
-%patch0 -p1
+%setup -q
 
 %build
 %{__aclocal}
@@ -70,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+# for autodeps to work
+chmod +x $RPM_BUILD_ROOT%{_libdir}/libnl.so.*.*
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -79,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc ChangeLog
-%attr(755,root,root) %{_libdir}/libnl.so.[0-9].[0-9]*
+%attr(755,root,root) %{_libdir}/libnl.so.*.*
 %ghost %attr(755,root,root) %{_libdir}/libnl.so.1
 
 %files devel
