@@ -2,13 +2,14 @@ Summary:	Netlink library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.1
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}.tar.gz
 # Source0-md5:	ae970ccd9144e132b68664f98e7ceeb1
 Patch0:		%{name}-static.patch
+Patch1:		%{name}-ULONG_MAX.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -52,6 +53,7 @@ Statyczna biblioteka libnl.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__aclocal}
