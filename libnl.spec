@@ -13,6 +13,7 @@ Patch1:		%{name}-ULONG_MAX.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -21,10 +22,10 @@ provides an easy to use interface for raw netlink message but also
 netlink family specific APIs.
 
 %description -l pl.UTF-8
-libnl jest biblioteką dla aplikacji rozmawiających z gniazdem
-netlink. Udostępnia łatwy w użyciu interfejs do korzystania z
-surowych wiadomości netlink, a także API specyficzne dla rodziny
-gniazd netlink.
+libnl jest biblioteką dla aplikacji rozmawiających z gniazdem netlink.
+Udostępnia łatwy w użyciu interfejs do korzystania z surowych
+wiadomości netlink, a także API specyficzne dla rodziny gniazd
+netlink.
 
 %package devel
 Summary:	Header files for libnl library
@@ -83,7 +84,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc ChangeLog
 %attr(755,root,root) %{_libdir}/libnl.so.*.*
-%ghost %attr(755,root,root) %{_libdir}/libnl.so.1
+%attr(755,root,root) %ghost %{_libdir}/libnl.so.1
 
 %files devel
 %defattr(644,root,root,755)
