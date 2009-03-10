@@ -20,6 +20,7 @@ BuildRequires:	automake
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 %{?with_apidocs:BuildRequires:	tetex-dvips}
 %{?with_apidocs:BuildRequires:	tetex-format-latex}
+%{?with_apidocs:BuildRequires:	doxygen}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -56,6 +57,14 @@ Static libnl library.
 
 %description static -l pl.UTF-8
 Statyczna biblioteka libnl.
+
+%package apidocs
+Summary:	libnl library API documentation
+Group:		Documentation
+
+%description apidocs
+Documentation for libnl library API and guides in HTML format
+generated from sources by doxygen.
 
 %prep
 %setup -q
@@ -106,5 +115,5 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with apidocs}
 %files apidocs
 %defattr(644,root,root,755)
-%doc apidocs
+%doc doc/html/*
 %endif
