@@ -1,8 +1,12 @@
+#
+# Conditional build:
+%bcond_without	apidocs		# don't build api docs
+
 Summary:	Netlink library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.1
-Release:	2
+Release:	3
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -14,6 +18,8 @@ URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	linux-libc-headers >= 6:2.6.23
+%{?with_apidocs:BuildRequires:	tetex-dvips}
+%{?with_apidocs:BuildRequires:	tetex-format-latex}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -64,6 +70,7 @@ Statyczna biblioteka libnl.
 	--enable-verbose-errors
 
 %{__make}
+%{?with_apidocs:%{__make} -C doc gendoc}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -95,3 +102,9 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libnl.a
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%doc apidocs
+%endif
