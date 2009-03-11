@@ -1,8 +1,8 @@
 #
 # Conditional build:
 %bcond_without	apidocs		# don't build api docs
-
-Summary:	Netlink library
+#
+Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	1.1
@@ -60,11 +60,16 @@ Statyczna biblioteka libnl.
 
 %package apidocs
 Summary:	libnl library API documentation
+Summary(pl.UTF-8):	Dokumentacja API biblioteki libnl
 Group:		Documentation
 
 %description apidocs
 Documentation for libnl library API and guides in HTML format
 generated from sources by doxygen.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API biblioteki libnl oraz wprowadzenie w formacie HTML
+wygenerowane ze źródeł za pomocą doxygena.
 
 %prep
 %setup -q
