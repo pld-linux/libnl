@@ -18,10 +18,11 @@ Patch2:		%{name}-gcc44.patch
 URL:		http://people.suug.ch/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
+%{?with_apidocs:BuildRequires:	doxygen}
+%{?with_apidocs:BuildRequires:	graphviz}
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 %{?with_apidocs:BuildRequires:	tetex-dvips}
 %{?with_apidocs:BuildRequires:	tetex-format-latex}
-%{?with_apidocs:BuildRequires:	doxygen}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
