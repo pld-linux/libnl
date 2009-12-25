@@ -15,7 +15,7 @@ Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}.tar.gz
 Patch0:		%{name}-static.patch
 Patch1:		%{name}-ULONG_MAX.patch
 Patch2:		%{name}-gcc44.patch
-URL:		http://people.suug.ch/~tgr/libnl/
+URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
 %{?with_apidocs:BuildRequires:	doxygen}
