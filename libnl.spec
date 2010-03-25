@@ -10,7 +10,7 @@ Release:	4
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	http://people.suug.ch/~tgr/libnl/files/%{name}-%{version}.tar.gz
+Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
 # Source0-md5:	ae970ccd9144e132b68664f98e7ceeb1
 Patch0:		%{name}-static.patch
 Patch1:		%{name}-ULONG_MAX.patch
