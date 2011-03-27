@@ -6,7 +6,7 @@ Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.0
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -19,6 +19,8 @@ BuildRequires:	linux-libc-headers >= 6:2.6.23
 %{?with_apidocs:BuildRequires:	tetex-dvips}
 %{?with_apidocs:BuildRequires:	tetex-format-latex}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		skip_post_check_so	bfifo.so.0.0.0 blackhole.so.0.0.0 htb.so.0.0.0 pfifo.so.0.0.0 basic.so.0.0.0 cgroup.so.0.0.0
 
 %description
 libnl is a library for applications dealing with netlink socket. It
