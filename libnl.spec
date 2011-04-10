@@ -13,7 +13,9 @@ Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
 # Source0-md5:	00740414d4d6f173a7dd2aa19432da62
 URL:		http://www.infradead.org/~tgr/libnl/
+BuildRequires:	bison >= 2.4.0
 %{?with_apidocs:BuildRequires:	doxygen}
+BuildRequires:	flex >= 2.5.34
 %{?with_apidocs:BuildRequires:	graphviz}
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 %{?with_apidocs:BuildRequires:	tetex-dvips}
