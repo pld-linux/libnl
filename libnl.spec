@@ -5,21 +5,34 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.0
-Release:	3
+Version:	3.1
+Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	00740414d4d6f173a7dd2aa19432da62
+# Source0-md5:	3bca9af3367d1561c274a0e46edc1ea2
+Patch0:		%{name}-link.patch
 URL:		http://www.infradead.org/~tgr/libnl/
+BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	bison >= 2.4.0
-%{?with_apidocs:BuildRequires:	doxygen}
 BuildRequires:	flex >= 2.5.34
-%{?with_apidocs:BuildRequires:	graphviz}
+BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 6:2.6.23
-%{?with_apidocs:BuildRequires:	tetex-dvips}
-%{?with_apidocs:BuildRequires:	tetex-format-latex}
+BuildRequires:	python-devel >= 1:2.6
+BuildRequires:	rpmbuild(macros) >= 1.219
+BuildRequires:	swig-python
+%if %{with apidocs}
+BuildRequires:	asciidoc >= 8.6.5
+BuildRequires:	asciidoc-filter-mscgen >= 1.2
+BuildRequires:	doxygen
+BuildRequires:	mscgen
+BuildRequires:	python-pygments
+BuildRequires:	tetex-dvips
+BuildRequires:	tetex-format-latex
+BuildRequires:	xmlstarlet >= 1.2.1
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		skip_post_check_so	bfifo.so.0.0.0 blackhole.so.0.0.0 htb.so.0.0.0 pfifo.so.0.0.0 basic.so.0.0.0 cgroup.so.0.0.0
@@ -74,15 +87,38 @@ generated from sources by doxygen.
 Dokumentacja API biblioteki libnl oraz wprowadzenie w formacie HTML
 wygenerowane ze źródeł za pomocą doxygena.
 
+%package -n python-netlink
+Summary:	Python wrapper for netlink protocols
+Summary(pl.UTF-8):	Pythonowy interfejs do protokołów netlink
+Group:		Libraries/Python
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+
+%description -n python-netlink
+Python wrapper for netlink protocols.
+
+%description -n python-netlink -l pl.UTF-8
+Pythonowy interfejs do protokołów netlink.
+
 %prep
 %setup -q
+%patch0 -p1
 
 %build
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure \
 	--disable-silent-rules
 
 %{__make}
-%{?with_apidocs:%{__make} -C doc gendoc}
+%{?with_apidocs:%{__make} -j1 -C doc gendoc}
+
+cd python
+CFLAGS="%{rpmcflags}" \
+LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs" \
+%{__python} setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -90,6 +126,13 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+cd python
+%{__python} setup.py install \
+	--optimize=2 \
+	--root=$RPM_BUILD_ROOT
+%py_postclean
+
+# dynamic modules
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.{la,a}
 
 %clean
@@ -137,14 +180,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl-genl.so
 %attr(755,root,root) %{_libdir}/libnl-nf.so
 %attr(755,root,root) %{_libdir}/libnl-route.so
-# keep *.la: pkgconfig support is incomplete
+# keep *.la: pkgconfig support is incomplete (missing for libnl-cli)
 %{_libdir}/libnl.la
 %{_libdir}/libnl-cli.la
 %{_libdir}/libnl-genl.la
 %{_libdir}/libnl-nf.la
 %{_libdir}/libnl-route.la
 %{_includedir}/netlink
-%{_pkgconfigdir}/libnl-3.0.pc
+%{_pkgconfigdir}/libnl-3.1.pc
+%{_pkgconfigdir}/libnl-genl-3.1.pc
+%{_pkgconfigdir}/libnl-nf-3.1.pc
+%{_pkgconfigdir}/libnl-route-3.1.pc
 
 %files static
 %defattr(644,root,root,755)
@@ -157,5 +203,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with apidocs}
 %files apidocs
 %defattr(644,root,root,755)
-%doc doc/html/*
+%doc doc/{*.html,api,images}
 %endif
+
+%files -n python-netlink
+%defattr(644,root,root,755)
+%dir %{py_sitedir}/netlink
+%attr(755,root,root) %{py_sitedir}/netlink/_capi.so
+%{py_sitedir}/netlink/*.py[co]
+%dir %{py_sitedir}/netlink/route
+%attr(755,root,root) %{py_sitedir}/netlink/route/_capi.so
+%{py_sitedir}/netlink/route/*.py[co]
+%dir %{py_sitedir}/netlink/route/links
+%{py_sitedir}/netlink/route/links/*.py[co]
+%dir %{py_sitedir}/netlink/route/qdisc
+%{py_sitedir}/netlink/route/qdisc/*.py[co]
+%{py_sitedir}/netlink-1.0-py*.egg-info

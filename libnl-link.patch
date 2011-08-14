@@ -1,0 +1,11 @@
+--- libnl-3.1/src/lib/Makefile.am.orig	2010-10-26 13:36:57.000000000 +0200
++++ libnl-3.1/src/lib/Makefile.am	2011-08-14 09:22:17.996384902 +0200
+@@ -1,7 +1,7 @@
+ # -*- Makefile -*-
+ 
+ AM_CPPFLAGS  = -Wall -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DPKGLIBDIR=\"$(pkglibdir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -rdynamic
+-AM_LDFLAGS = -L${top_builddir}/lib -ldl -version-info 3:0:0
++AM_LDFLAGS = -ldl -version-info 3:0:0
+ 
+ #nobase_pkglib_LTLIBRARIES = cls/basic.la cls/ematch/cmp.la
+ #cls_basic_la_LDFLAGS = -module -version-info 2:0:0
