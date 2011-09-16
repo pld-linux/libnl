@@ -1,11 +1,29 @@
---- libnl-3.1/src/lib/Makefile.am.orig	2010-10-26 13:36:57.000000000 +0200
-+++ libnl-3.1/src/lib/Makefile.am	2011-08-14 09:22:17.996384902 +0200
-@@ -1,7 +1,7 @@
- # -*- Makefile -*-
+--- libnl-3.2.0/src/lib/Makefile.am.orig	2011-09-13 19:15:01.000000000 +0200
++++ libnl-3.2.0/src/lib/Makefile.am	2011-09-16 18:46:28.999115930 +0200
+@@ -2,7 +2,6 @@
  
  AM_CPPFLAGS  = -Wall -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DPKGLIBDIR=\"$(pkglibdir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -rdynamic
--AM_LDFLAGS = -L${top_builddir}/lib -ldl -version-info 3:0:0
-+AM_LDFLAGS = -ldl -version-info 3:0:0
+ AM_LDFLAGS = \
+-	-L${top_builddir}/lib \
+ 	-ldl \
+ 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
  
- #nobase_pkglib_LTLIBRARIES = cls/basic.la cls/ematch/cmp.la
- #cls_basic_la_LDFLAGS = -module -version-info 2:0:0
+--- libnl-3.2.0/python/setup.py.in.orig	2011-08-16 16:15:56.000000000 +0200
++++ libnl-3.2.0/python/setup.py.in	2011-09-16 19:27:31.155865040 +0200
+@@ -9,14 +9,14 @@
+                          sources = ['netlink/capi.i'],
+ 			 include_dirs = include,
+ 			 swig_opts = opts,
+-			 libraries = ['nl'],
++			 libraries = ['nl-3'],
+ 			)
+ 
+ route_capi = Extension('netlink/route/_capi',
+                          sources = ['netlink/route/capi.i'],
+ 			 include_dirs = include,
+ 			 swig_opts = opts,
+-			 libraries = ['nl', 'nl-route'],
++			 libraries = ['nl-3', 'nl-route-3'],
+ 			)
+ 
+ setup(name = 'netlink',

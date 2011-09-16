@@ -5,13 +5,13 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.1
+Version:	3.2.0
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	3bca9af3367d1561c274a0e46edc1ea2
+# Source0-md5:	f69506a9d4c5e86d2a41fc55b825af68
 Patch0:		%{name}-link.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
@@ -153,16 +153,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/nl-link-list
 %attr(755,root,root) %{_sbindir}/nl-pktloc-lookup
 %attr(755,root,root) %{_sbindir}/nl-qdisc-*
-%attr(755,root,root) %{_libdir}/libnl.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl.so.3
-%attr(755,root,root) %{_libdir}/libnl-cli.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-cli.so.3
-%attr(755,root,root) %{_libdir}/libnl-genl.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-genl.so.3
-%attr(755,root,root) %{_libdir}/libnl-nf.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-nf.so.3
-%attr(755,root,root) %{_libdir}/libnl-route.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-route.so.3
+%attr(755,root,root) %{_libdir}/libnl-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-cli-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-genl-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-nf-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.200
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
@@ -175,30 +175,30 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libnl.so
-%attr(755,root,root) %{_libdir}/libnl-cli.so
-%attr(755,root,root) %{_libdir}/libnl-genl.so
-%attr(755,root,root) %{_libdir}/libnl-nf.so
-%attr(755,root,root) %{_libdir}/libnl-route.so
+%attr(755,root,root) %{_libdir}/libnl-3.so
+%attr(755,root,root) %{_libdir}/libnl-cli-3.so
+%attr(755,root,root) %{_libdir}/libnl-genl-3.so
+%attr(755,root,root) %{_libdir}/libnl-nf-3.so
+%attr(755,root,root) %{_libdir}/libnl-route-3.so
 # keep *.la: pkgconfig support is incomplete (missing for libnl-cli)
-%{_libdir}/libnl.la
-%{_libdir}/libnl-cli.la
-%{_libdir}/libnl-genl.la
-%{_libdir}/libnl-nf.la
-%{_libdir}/libnl-route.la
-%{_includedir}/netlink
-%{_pkgconfigdir}/libnl-3.1.pc
-%{_pkgconfigdir}/libnl-genl-3.1.pc
-%{_pkgconfigdir}/libnl-nf-3.1.pc
-%{_pkgconfigdir}/libnl-route-3.1.pc
+%{_libdir}/libnl-3.la
+%{_libdir}/libnl-cli-3.la
+%{_libdir}/libnl-genl-3.la
+%{_libdir}/libnl-nf-3.la
+%{_libdir}/libnl-route-3.la
+%{_includedir}/libnl3
+%{_pkgconfigdir}/libnl-3.0.pc
+%{_pkgconfigdir}/libnl-genl-3.0.pc
+%{_pkgconfigdir}/libnl-nf-3.0.pc
+%{_pkgconfigdir}/libnl-route-3.0.pc
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/libnl.a
-%{_libdir}/libnl-cli.a
-%{_libdir}/libnl-genl.a
-%{_libdir}/libnl-nf.a
-%{_libdir}/libnl-route.a
+%{_libdir}/libnl-3.a
+%{_libdir}/libnl-cli-3.a
+%{_libdir}/libnl-genl-3.a
+%{_libdir}/libnl-nf-3.a
+%{_libdir}/libnl-route-3.a
 
 %if %{with apidocs}
 %files apidocs
