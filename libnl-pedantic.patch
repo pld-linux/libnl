@@ -1,0 +1,156 @@
+diff -ur libnl-3.2.0.org/include/netlink/attr.h libnl-3.2.0/include/netlink/attr.h
+--- libnl-3.2.0.org/include/netlink/attr.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/attr.h	2011-09-17 08:56:26.044922372 +0200
+@@ -44,7 +44,7 @@
+ 	NLA_FLAG,	/**< Flag */
+ 	NLA_MSECS,	/**< Micro seconds (64bit) */
+ 	NLA_NESTED,	/**< Nested attributes */
+-	__NLA_TYPE_MAX,
++	__NLA_TYPE_MAX
+ };
+ 
+ #define NLA_TYPE_MAX (__NLA_TYPE_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/cache-api.h libnl-3.2.0/include/netlink/cache-api.h
+--- libnl-3.2.0.org/include/netlink/cache-api.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/cache-api.h	2011-09-17 08:56:41.585298135 +0200
+@@ -115,7 +115,7 @@
+ 	NL_ACT_GET,
+ 	NL_ACT_SET,
+ 	NL_ACT_CHANGE,
+-	__NL_ACT_MAX,
++	__NL_ACT_MAX
+ };
+ 
+ #define NL_ACT_MAX (__NL_ACT_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/handlers.h libnl-3.2.0/include/netlink/handlers.h
+--- libnl-3.2.0.org/include/netlink/handlers.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/handlers.h	2011-09-17 08:57:06.462565163 +0200
+@@ -62,7 +62,7 @@
+ 	/** Skip this message */
+ 	NL_SKIP,
+ 	/** Stop parsing altogether and discard remaining messages */
+-	NL_STOP,
++	NL_STOP
+ };
+ 
+ /**
+@@ -78,7 +78,7 @@
+ 	NL_CB_DEBUG,
+ 	/** Customized handler specified by the user */
+ 	NL_CB_CUSTOM,
+-	__NL_CB_KIND_MAX,
++	__NL_CB_KIND_MAX
+ };
+ 
+ #define NL_CB_KIND_MAX (__NL_CB_KIND_MAX - 1)
+@@ -110,7 +110,7 @@
+ 	NL_CB_SEND_ACK,
+ 	/** Flag NLM_F_DUMP_INTR is set in message */
+ 	NL_CB_DUMP_INTR,
+-	__NL_CB_TYPE_MAX,
++	__NL_CB_TYPE_MAX
+ };
+ 
+ #define NL_CB_TYPE_MAX (__NL_CB_TYPE_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/netfilter/log.h libnl-3.2.0/include/netlink/netfilter/log.h
+--- libnl-3.2.0.org/include/netlink/netfilter/log.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/netfilter/log.h	2011-09-17 08:57:30.113135916 +0200
+@@ -30,12 +30,12 @@
+ enum nfnl_log_copy_mode {
+ 	NFNL_LOG_COPY_NONE,
+ 	NFNL_LOG_COPY_META,
+-	NFNL_LOG_COPY_PACKET,
++	NFNL_LOG_COPY_PACKET
+ };
+ 
+ enum nfnl_log_flags {
+ 	NFNL_LOG_FLAG_SEQ		= 0x1,
+-	NFNL_LOG_FLAG_SEQ_GLOBAL	= 0x2,
++	NFNL_LOG_FLAG_SEQ_GLOBAL	= 0x2
+ };
+ 
+ /* General */
+diff -ur libnl-3.2.0.org/include/netlink/netfilter/queue.h libnl-3.2.0/include/netlink/netfilter/queue.h
+--- libnl-3.2.0.org/include/netlink/netfilter/queue.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/netfilter/queue.h	2011-09-17 08:57:40.600055691 +0200
+@@ -27,7 +27,7 @@
+ enum nfnl_queue_copy_mode {
+ 	NFNL_QUEUE_COPY_NONE,
+ 	NFNL_QUEUE_COPY_META,
+-	NFNL_QUEUE_COPY_PACKET,
++	NFNL_QUEUE_COPY_PACKET
+ };
+ 
+ /* General */
+diff -ur libnl-3.2.0.org/include/netlink/route/link.h libnl-3.2.0/include/netlink/route/link.h
+--- libnl-3.2.0.org/include/netlink/route/link.h	2011-09-09 10:31:41.000000000 +0200
++++ libnl-3.2.0/include/netlink/route/link.h	2011-09-17 08:58:02.583919807 +0200
+@@ -92,7 +92,7 @@
+ 	RTNL_LINK_ICMP6_INERRORS,	/*!< ICMPv6 SNMP InErrors */
+ 	RTNL_LINK_ICMP6_OUTMSGS,	/*!< ICMPv6 SNMP OutMsgs */
+ 	RTNL_LINK_ICMP6_OUTERRORS,	/*!< ICMPv6 SNMP OutErrors */
+-	__RTNL_LINK_STATS_MAX,
++	__RTNL_LINK_STATS_MAX
+ } rtnl_link_stat_id_t;
+ 
+ #define RTNL_LINK_STATS_MAX (__RTNL_LINK_STATS_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/route/nexthop.h libnl-3.2.0/include/netlink/route/nexthop.h
+--- libnl-3.2.0.org/include/netlink/route/nexthop.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/route/nexthop.h	2011-09-17 08:58:11.357465046 +0200
+@@ -24,7 +24,7 @@
+ enum {
+ 	NH_DUMP_FROM_ONELINE = -2,
+ 	NH_DUMP_FROM_DETAILS = -1,
+-	NH_DUMP_FROM_ENV = 0,
++	NH_DUMP_FROM_ENV = 0
+ 	/* > 0 reserved for nexthop index */
+ };
+ 
+diff -ur libnl-3.2.0.org/include/netlink/route/tc-api.h libnl-3.2.0/include/netlink/route/tc-api.h
+--- libnl-3.2.0.org/include/netlink/route/tc-api.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/route/tc-api.h	2011-09-17 08:58:26.867839643 +0200
+@@ -24,7 +24,7 @@
+ 	RTNL_TC_TYPE_QDISC,
+ 	RTNL_TC_TYPE_CLASS,
+ 	RTNL_TC_TYPE_CLS,
+-	__RTNL_TC_TYPE_MAX,
++	__RTNL_TC_TYPE_MAX
+ };
+ 
+ #define RTNL_TC_TYPE_MAX (__RTNL_TC_TYPE_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/route/tc.h libnl-3.2.0/include/netlink/route/tc.h
+--- libnl-3.2.0.org/include/netlink/route/tc.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/route/tc.h	2011-09-17 08:58:36.384736091 +0200
+@@ -63,7 +63,7 @@
+ 	RTNL_TC_DROPS,		/**< Total number of packets dropped */
+ 	RTNL_TC_REQUEUES,	/**< Total number of requeues */
+ 	RTNL_TC_OVERLIMITS,	/**< Total number of overlimits */
+-	__RTNL_TC_STATS_MAX,
++	__RTNL_TC_STATS_MAX
+ };
+ 
+ #define RTNL_TC_STATS_MAX (__RTNL_TC_STATS_MAX - 1)
+diff -ur libnl-3.2.0.org/include/netlink/types.h libnl-3.2.0/include/netlink/types.h
+--- libnl-3.2.0.org/include/netlink/types.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/types.h	2011-09-17 08:59:11.778924754 +0200
+@@ -22,7 +22,7 @@
+ 	NL_DUMP_LINE,		/**< Dump object briefly on one line */
+ 	NL_DUMP_DETAILS,	/**< Dump all attributes but no statistics */
+ 	NL_DUMP_STATS,		/**< Dump all attributes including statistics */
+-	__NL_DUMP_MAX,
++	__NL_DUMP_MAX
+ };
+ #define NL_DUMP_MAX (__NL_DUMP_MAX - 1)
+ 
+diff -ur libnl-3.2.0.org/include/netlink/utils.h libnl-3.2.0/include/netlink/utils.h
+--- libnl-3.2.0.org/include/netlink/utils.h	2011-08-16 16:16:01.000000000 +0200
++++ libnl-3.2.0/include/netlink/utils.h	2011-09-17 08:59:19.612448026 +0200
+@@ -40,7 +40,7 @@
+ 
+ enum {
+ 	NL_BYTE_RATE,
+-	NL_BIT_RATE,
++	NL_BIT_RATE
+ };
+ 
+ /* unit pretty-printing */
