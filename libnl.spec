@@ -5,13 +5,13 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.1
+Version:	3.2.2
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	973922013021b8a47f519fdebb7d7ca0
+# Source0-md5:	14629e31250fb4e1be17fa23fcd6cad6
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -180,7 +180,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl-genl-3.so
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so
 %attr(755,root,root) %{_libdir}/libnl-route-3.so
-# keep *.la: pkgconfig support is incomplete (missing for libnl-cli)
 %{_libdir}/libnl-3.la
 %{_libdir}/libnl-cli-3.la
 %{_libdir}/libnl-genl-3.la
@@ -188,6 +187,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libnl-route-3.la
 %{_includedir}/libnl3
 %{_pkgconfigdir}/libnl-3.0.pc
+%{_pkgconfigdir}/libnl-cli-3.0.pc
 %{_pkgconfigdir}/libnl-genl-3.0.pc
 %{_pkgconfigdir}/libnl-nf-3.0.pc
 %{_pkgconfigdir}/libnl-route-3.0.pc
