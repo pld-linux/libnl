@@ -14,6 +14,7 @@ Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
 # Source0-md5:	dbbb44801e833cf9ca4fdc943f2a58ee
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
+Patch2:		0001-avoid-dangling-co_major_cache-reference-to-NL_AUTO_P.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -102,6 +103,8 @@ Pythonowy interfejs do protokołów netlink.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+# fron ntrack.spec; question is why it wasn't merged upstream
+%patch2 -p1
 
 %build
 %{__libtoolize}
