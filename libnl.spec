@@ -5,16 +5,16 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.3
+Version:	3.2.5
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	dbbb44801e833cf9ca4fdc943f2a58ee
+# Source0-md5:	98c286c9313beab88fed96fb630f0be6
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
-Patch2:		0001-avoid-dangling-co_major_cache-reference-to-NL_AUTO_P.patch
+Patch2:		%{name}-soname.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -103,7 +103,7 @@ Pythonowy interfejs do protokołów netlink.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-# fron ntrack.spec; question is why it wasn't merged upstream
+# don't decrease soname (from -3.so.200.x.y); note: recheck on each upgrade
 %patch2 -p1
 
 %build
