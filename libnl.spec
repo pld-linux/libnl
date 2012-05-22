@@ -170,9 +170,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
-%attr(755,root,root) %{_libdir}/libnl/cli/cls/*.so*
+%attr(755,root,root) %{_libdir}/libnl/cli/cls/*.so
 %dir %{_libdir}/libnl/cli/qdisc
-%attr(755,root,root) %{_libdir}/libnl/cli/qdisc/*.so*
+%attr(755,root,root) %{_libdir}/libnl/cli/qdisc/*.so
 %{_mandir}/man8/genl-ctrl-list.8*
 %{_mandir}/man8/nl-classid-lookup.8*
 %{_mandir}/man8/nl-pktloc-lookup.8*
