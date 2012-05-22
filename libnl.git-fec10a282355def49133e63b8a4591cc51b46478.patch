@@ -1,0 +1,1496 @@
+From fec10a282355def49133e63b8a4591cc51b46478 Mon Sep 17 00:00:00 2001
+From: Thomas Graf <tgraf@redhat.com>
+Date: Thu, 10 May 2012 12:03:59 +0200
+Subject: [PATCH] doc: documentation restructuring
+
+- changes the modules hierarchy to better represent the set of libaries
+- list the header file that needs to be included
+- remove examples/doc from api ref that is included in the guide
+- add references to the guide
+- fix doxygen api linking for version 1.8.0
+- readd doxygen mainpage to config file
+- fix a couple of doxygen doc bugs
+---
+ configure.in            |   12 +--
+ doc/Doxyfile.in         |   13 +-
+ doc/Makefile.am         |   21 ++--
+ doc/README              |    4 +-
+ doc/api/.gitignore      |    1 +
+ doc/core.txt            |   11 ++
+ doc/gen-tags.sh         |   10 +-
+ doc/src/toc.c           |   17 +--
+ doc/tags2dict.sh        |    8 -
+ include/netlink/attr.h  |   14 +-
+ include/netlink/types.h |    8 +-
+ include/netlink/utils.h |    4 +-
+ lib/addr.c              |   30 ++--
+ lib/attr.c              |  359 ++---------------------------------------------
+ lib/cache.c             |    9 ++
+ lib/cache_mngr.c        |   17 ++-
+ lib/cache_mngt.c        |   14 ++-
+ lib/data.c              |   16 ++-
+ lib/fib_lookup/lookup.c |    3 +-
+ lib/genl/genl.c         |    4 +-
+ lib/handlers.c          |   21 +--
+ lib/msg.c               |  152 ++-------------------
+ lib/netfilter/nfnl.c    |    4 +-
+ lib/nl.c                |  110 ++++++---------
+ lib/object.c            |   16 ++-
+ lib/route/link.c        |    3 +-
+ lib/route/rtnl.c        |    4 +-
+ lib/socket.c            |   16 ++-
+ lib/utils.c             |   30 ++++-
+ 29 files changed, 250 insertions(+), 681 deletions(-)
+ delete mode 100755 doc/tags2dict.sh
+
+diff --git a/configure.in b/configure.in
+index ed059c3..800354d 100644
+--- a/configure.in
++++ b/configure.in
+@@ -91,17 +91,6 @@ if test "x$generate_doc" != "xno"; then
+ 		AC_MSG_ERROR([*** doxygen package required to generate documentation])
+ 	fi
+ 
+-	link_doc=yes
+-	AC_CHECK_PROG(HAVE_XMLSTARLET, [xmlstarlet], yes, no)
+-	if test "x$HAVE_XMLSTARLET" = "xno"; then
+-		if test "x$generate_doc" = "xyes"; then
+-			AC_MSG_ERROR([*** xmlstarlet package required to generate documentation])
+-		else
+-			AC_MSG_WARN([*** xmlstarlet not found, linking to APi reference disabled])
+-			link_doc=no
+-		fi
+-	fi
+-
+ 	AC_CHECK_PROG(HAVE_ASCIIDOC, [asciidoc], yes, no)
+ 	if test "x$HAVE_ASCIIDOC" = "xno"; then
+ 		if test "x$generate_doc" = "xyes"; then
+@@ -123,6 +112,7 @@ if test "x$generate_doc" != "xno"; then
+ 		fi
+ 	fi
+ 
++	link_doc=yes
+ 	if test "x$HAVE_DOXYGEN" = "xno"; then
+ 		AC_MSG_WARN([*** Disabling API linking due to missing doxygen package])
+ 		link_doc=no
+diff --git a/doc/Doxyfile.in b/doc/Doxyfile.in
+index 8bb4fd5..d515db2 100644
+--- a/doc/Doxyfile.in
++++ b/doc/Doxyfile.in
+@@ -181,11 +181,11 @@ TAB_SIZE               = 8
+ 
+ ALIASES                = arg=\param
+ 
+-ALIASES += ref_asciidoc{3}="<a href=\"../\1.html#\2\">\3</a>"
+-ALIASES += ref_core{2}="\ref_asciidoc{core,\1,\2 (Netlink Library)}"
+-ALIASES += ref_route{2}="\ref_asciidoc{route,\1,\2 (Routing Family Library)}"
+-ALIASES += core_doc{2}="\par Related Documentation:\n\ref_core{\1,\2}"
+-ALIASES += route_doc{2}="\par Related Documentation:\n\ref_route{\1,\2}"
++ALIASES += ref_asciidoc{3}="<a href=\"../\1.html#\2\"><b>\3</b></a>"
++ALIASES += ref_core{2}="\ref_asciidoc{core,\1,\2 (Netlink Core Library Development Guide)}"
++ALIASES += ref_route{2}="\ref_asciidoc{route,\1,\2 (Netlink Routing Development Guide)}"
++ALIASES += core_doc{2}="\ref_core{\1,\2}"
++ALIASES += route_doc{2}="\ref_route{\1,\2}"
+ 
+ # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
+ # sources only. Doxygen will then generate output that is more tailored for C.
+@@ -590,7 +590,8 @@ WARN_LOGFILE           =
+ INPUT                  = @top_srcdir@/lib \
+                          @top_srcdir@/src/lib \
+                          @top_srcdir@/include/netlink \
+-                         @top_srcdir@/src
++                         @top_srcdir@/src \
++                         @top_srcdir@/doc/src
+ 
+ # This tag can be used to specify the character encoding of the source files
+ # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index 142dc31..ffa2245 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -20,7 +20,6 @@ EXTRA_DIST = \
+ 	doxygen-link.py \
+ 	gen-tags.sh \
+ 	resolve-asciidoc-refs.py \
+-	tags2dict.sh \
+ 	stylesheets/asciidoc.css \
+ 	stylesheets/asciidoc-manpage.css \
+ 	stylesheets/docbook-xsl.css \
+@@ -78,28 +77,26 @@ EXTRA_DIST = \
+ 	images/icons/callouts/14.png \
+ 	images/icons/callouts/15.png
+ 
+-%.html: %.txt
++link_doc:
+ if LINK_DOC
++	./gen-tags.sh > libnl.dict
++else
++	@echo "Warning: Linking to API reference is disabled, check configure output"
++endif
++	
++
++%.html: %.txt link_doc
+ 	./resolve-asciidoc-refs.py $< > asciidoc.tmp
+ 	asciidoc $(ASCIIDOCOPTS) -o $@ asciidoc.tmp
++if LINK_DOC
+ 	./doxygen-link.py libnl.dict $@ > asciidoc.tmp
+ 	mv asciidoc.tmp $@
+-else
+-	asciidoc $(ASCIIDOCOPTS) -o $@ $<
+ endif
+ 
+ asciidoc: core.html route.html index.html
+ 
+-link_doc:
+-if LINK_DOC
+-	./gen-tags.sh | ./tags2dict.sh > libnl.dict
+-else
+-	@echo "Warning: Linking to API reference is disabled, check configure output"
+-endif
+-
+ api_ref:
+ 	doxygen Doxyfile;
+-	$(MAKE) link_doc
+ 
+ gendoc:
+ if GENERATE_DOC
+diff --git a/doc/README b/doc/README
+index 0c230a2..0784e13 100644
+--- a/doc/README
++++ b/doc/README
+@@ -6,5 +6,5 @@ mscgen
+ mscgen-filter-1.2
+   http://code.google.com/p/asciidoc-mscgen-filter/
+ 
+-asciidoc 8.6.x
+-doxygen
++asciidoc > 8.6.x
++doxygen > 1.8.0
+#diff --git a/doc/api/.gitignore b/doc/api/.gitignore
+#index 821cf65..e57ca88 100644
+#--- a/doc/api/.gitignore
+#+++ b/doc/api/.gitignore
+#@@ -3,5 +3,6 @@
+# *.css
+# *.map
+# *.md5
+#+*.js
+# formula.repository
+# jquery.js
+diff --git a/doc/core.txt b/doc/core.txt
+index 7f26e05..8a26dba 100644
+--- a/doc/core.txt
++++ b/doc/core.txt
+@@ -2811,6 +2811,17 @@ is stored in +*result+.
+ NOTE: Make sure to return the reference to an address using
+       `nl_addr_put()` after usage to allow memory being freed.
+ 
++.Example: Transform character string to abstract address
++[source,c]
++-----
++struct nl_addr *a = nl_addr_parse("::1", AF_UNSPEC);
++printf("Address family: %s\n", nl_af2str(nl_addr_get_family(a)));
++nl_addr_put(a);
++a = nl_addr_parse("11:22:33:44:55:66", AF_UNSPEC);
++printf("Address family: %s\n", nl_af2str(nl_addr_get_family(a)));
++nl_addr_put(a);
++-----
++
+ .Address References
+ 
+ Abstract addresses use reference counting to account for all users of
+diff --git a/doc/gen-tags.sh b/doc/gen-tags.sh
+index aba6672..862ec09 100755
+--- a/doc/gen-tags.sh
++++ b/doc/gen-tags.sh
+@@ -5,16 +5,10 @@
+ # written by Carsten Haitzler <ras...@rasterman.com>
+ #
+ 
+-echo '<libnltags>'
+ for f in api/group__*.html
+ do
+ 	bf=$(basename $f)
+ 
+-	grep -oE '<!-- doxytag.* -->' $f |
+-		sed 's/<!-- doxytag:/<libnltag/' |
+-		sed "s/-->/file=\"$bf\" \/>/" |
+-		sed "s/ ref=\"/ href=\"$bf#/" |
+-		sed 's/ member="\([^:]*::\)\([^"]*\)"/ member="\2"/' |
+-		sed 's/ member="\([^"]*\)"/ short="\1"/'
++	grep -oE "href=\"$bf#[a-z0-9]+\">[^<]+</a>" $f |
++		sed 's/href="\([^"]*\)">\([^<]*\)<\/a>/\2=api\/\1/'
+ done
+-echo '</libnltags>'
+#diff --git a/doc/src/toc.c b/doc/src/toc.c
+#index ba7e07a..570c1df 100644
+#--- a/doc/src/toc.c
+#+++ b/doc/src/toc.c
+#@@ -9,11 +9,11 @@
+# 
+# libnl is a set of libraries to deal with the netlink protocol and some
+# of the high level protocols implemented on top of it. The goal is to
+#-provide APIs on different levels of abstraction. The core library libnl.so
+#+provide APIs on different levels of abstraction. The core library libnl
+# provides a fundamental set of functions to deal with sockets, construct
+# messages, and send/receive those messages. Additional high level interfaces
+# for several individual netlink protocols are provided in separate
+#-libraries (e.g. "nl-route.so", "nl-genl.so", ...).
+#+libraries (e.g. "nl-route", "nl-genl", ...).
+# 
+# The library is designed to ensure that all components are optional, i.e.
+# even though the core library provides a caching system which allows to
+#@@ -33,16 +33,9 @@ version is used with a considerably older kernel.
+# \subsection tree_dev Development Tree
+# 
+# @code
+#-git://git.kernel.org/pub/scm/libs/netlink/libnl.git
+#+git://git.infradead.org/users/tgr/libnl.git
+# @endcode
+#-- Web: http://www.kernel.org/pub/scm/libs/netlink/libnl.git
+#-
+#-\subsection tree_stable Stable Tree
+#-
+#-@code
+#-git://git.kernel.org/pub/scm/libs/netlink/libnl-stable.git
+#-@endcode
+#-- Web: http://www.kernel.org/pub/scm/libs/netlink/libnl-stable.git
+#+- Web: http://git.infradead.org/users/tgr/libnl.git
+# 
+# \section main_website Website
+# 
+#@@ -50,7 +43,7 @@ git://git.kernel.org/pub/scm/libs/netlink/libnl-stable.git
+# 
+# \section main_mailinglist Mailinglist
+# 
+#-Please post question and patches to the libnl mailinglist:
+#+Please post questions and patches to the libnl mailinglist:
+# 
+# @code
+# libnl@lists.infradead.org
+diff --git a/doc/tags2dict.sh b/doc/tags2dict.sh
+deleted file mode 100755
+index 76407af..0000000
+--- a/doc/tags2dict.sh
++++ /dev/null
+@@ -1,8 +0,0 @@
+-#!/bin/bash
+-xmlstarlet sel	-t \
+-		-m "/libnltags/libnltag[@href]" \
+-		-v "@short" \
+-		-o "=api/" \
+-		-v "@href" \
+-		-n
+-
+diff --git a/include/netlink/attr.h b/include/netlink/attr.h
+index 8479c23..4d32113 100644
+--- a/include/netlink/attr.h
++++ b/include/netlink/attr.h
+@@ -28,12 +28,12 @@ struct nl_msg;
+  * @{
+  */
+ 
+- /**
+-  * @ingroup attr
+-  * Basic attribute data types
+-  *
+-  * See \ref attr_datatypes for more details.
+-  */
++/**
++ * @ingroup attr
++ * Basic attribute data types
++ *
++ * See section @core_doc{core_attr_parse,Attribute Parsing} for more details.
++ */
+ enum {
+ 	NLA_UNSPEC,	/**< Unspecified type, binary data chunk */
+ 	NLA_U8,		/**< 8 bit integer */
+@@ -55,7 +55,7 @@ enum {
+  * @ingroup attr
+  * Attribute validation policy.
+  *
+- * See \ref attr_datatypes for more details.
++ * See section @core_doc{core_attr_parse,Attribute Parsing} for more details.
+  */
+ struct nla_policy {
+ 	/** Type of attribute or NLA_UNSPEC */
+diff --git a/include/netlink/types.h b/include/netlink/types.h
+index f6dade3..09cc5bd 100644
+--- a/include/netlink/types.h
++++ b/include/netlink/types.h
+@@ -1,12 +1,12 @@
+ /*
+- * netlink/netlink-types.h	Netlink Types
++ * netlink/types.h		Definition of public types
+  *
+  *	This library is free software; you can redistribute it and/or
+  *	modify it under the terms of the GNU Lesser General Public
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2006 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ #ifndef __NETLINK_TYPES_H_
+@@ -15,8 +15,8 @@
+ #include <stdio.h>
+ 
+ /**
+- * Dumping types (dp_type)
+  * @ingroup utils
++ * Enumeration of dumping variations (dp_type)
+  */
+ enum nl_dump_type {
+ 	NL_DUMP_LINE,		/**< Dump object briefly on one line */
+@@ -27,8 +27,8 @@ enum nl_dump_type {
+ #define NL_DUMP_MAX (__NL_DUMP_MAX - 1)
+ 
+ /**
+- * Dumping parameters
+  * @ingroup utils
++ * Dumping parameters
+  */
+ struct nl_dump_params
+ {
+diff --git a/include/netlink/utils.h b/include/netlink/utils.h
+index a1ef82e..4d7b969 100644
+--- a/include/netlink/utils.h
++++ b/include/netlink/utils.h
+@@ -6,7 +6,7 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ #ifndef NETLINK_UTILS_H_
+@@ -31,7 +31,7 @@ extern "C" {
+ #define NL_PROB_MIN 0x0
+ 
+ /**
+- * Upper probability limit
++ * Upper probability limit nl_dump_type
+  * @ingroup utils
+  */
+ #define NL_PROB_MAX 0xffffffff
+diff --git a/lib/addr.c b/lib/addr.c
+index 30c708d..89d3d4f 100644
+--- a/lib/addr.c
++++ b/lib/addr.c
+@@ -1,28 +1,30 @@
+ /*
+- * lib/addr.c		Abstract Address
++ * lib/addr.c		Network Address
+  *
+  *	This library is free software; you can redistribute it and/or
+  *	modify it under the terms of the GNU Lesser General Public
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2010 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @ingroup core
+- * @defgroup addr Abstract Address
++ * @ingroup core_types
++ * @defgroup addr Network Address
++ *
++ * Abstract data type representing any kind of network address
++ *
++ * Related sections in the development guide:
++ * - @core_doc{_abstract_address, Network Addresses}
+  *
+- * @par 1) Transform character string to abstract address
+- * @code
+- * struct nl_addr *a = nl_addr_parse("::1", AF_UNSPEC);
+- * printf("Address family: %s\n", nl_af2str(nl_addr_get_family(a)));
+- * nl_addr_put(a);
+- * a = nl_addr_parse("11:22:33:44:55:66", AF_UNSPEC);
+- * printf("Address family: %s\n", nl_af2str(nl_addr_get_family(a)));
+- * nl_addr_put(a);
+- * @endcode
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/addr.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+@@ -163,7 +165,7 @@ static void addr_destroy(struct nl_addr *addr)
+ }
+ 
+ /**
+- * @name Creating Abstract Addresses
++ * @name Creating Abstract Network Addresses
+  * @{
+  */
+ 
+diff --git a/lib/attr.c b/lib/attr.c
+index a045351..6ef6cd9 100644
+--- a/lib/attr.c
++++ b/lib/attr.c
+@@ -22,356 +22,16 @@
+  * @defgroup attr Attributes
+  * Netlink Attributes Construction/Parsing Interface
+  *
+- * \section attr_sec Netlink Attributes
+- * Netlink attributes allow for data chunks of arbitary length to be
+- * attached to a netlink message. Each attribute is encoded with a
+- * type and length field, both 16 bits, stored in the attribute header
+- * preceding the attribute data. The main advantage of using attributes
+- * over packing everything into the family header is that the interface
+- * stays extendable as new attributes can supersede old attributes while
+- * remaining backwards compatible. Also attributes can be defined optional
+- * thus avoiding the transmission of unnecessary empty data blocks.
+- * Special nested attributes allow for more complex data structures to
+- * be transmitted, e.g. trees, lists, etc.
+- *
+- * While not required, netlink attributes typically follow the family
+- * header of a netlink message and must be properly aligned to NLA_ALIGNTO:
+- * @code
+- *   +----------------+- - -+---------------+- - -+------------+- - -+
+- *   | Netlink Header | Pad | Family Header | Pad | Attributes | Pad |
+- *   +----------------+- - -+---------------+- - -+------------+- - -+
+- * @endcode
+- *
+- * The actual attributes are chained together each separately aligned to
+- * NLA_ALIGNTO. The position of an attribute is defined based on the
+- * length field of the preceding attributes:
+- * @code
+- *   +-------------+- - -+-------------+- - -+------
+- *   | Attribute 1 | Pad | Attribute 2 | Pad | ...
+- *   +-------------+- - -+-------------+- - -+------
+- *   nla_next(attr1)------^
+- * @endcode
+- *
+- * The attribute itself consists of the attribute header followed by
+- * the actual payload also aligned to NLA_ALIGNTO. The function nla_data()
+- * returns a pointer to the start of the payload while nla_len() returns
+- * the length of the payload in bytes.
+- *
+- * \b Note: Be aware, NLA_ALIGNTO equals to 4 bytes, therefore it is not
+- * safe to dereference any 64 bit data types directly.
+- *
+- * @code
+- *    <----------- nla_total_size(payload) ----------->
+- *    <-------- nla_attr_size(payload) --------->
+- *   +------------------+- - -+- - - - - - - - - +- - -+
+- *   | Attribute Header | Pad |     Payload      | Pad |
+- *   +------------------+- - -+- - - - - - - - - +- - -+
+- *   nla_data(nla)-------------^
+- *                             <- nla_len(nla) ->
+- * @endcode
+- *
+- * @subsection attr_datatypes Attribute Data Types
+- * A number of basic data types are supported to simplify access and
+- * validation of netlink attributes. This data type information is
+- * not encoded in the attribute, both the kernel and userspace part
+- * are required to share this information on their own.
+- *
+- * One of the major advantages of these basic types is the automatic
+- * validation of each attribute based on an attribute policy. The
+- * validation covers most of the checks required to safely use
+- * attributes and thus keeps the individual sanity check to a minimum.
+- *
+- * Never access attribute payload without ensuring basic validation
+- * first, attributes may:
+- * - not be present even though required
+- * - contain less actual payload than expected
+- * - fake a attribute length which exceeds the end of the message
+- * - contain unterminated character strings
+- *
+- * Policies are defined as array of the struct nla_policy. The array is
+- * indexed with the attribute type, therefore the array must be sized
+- * accordingly.
+- * @code
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- * 	[ATTR_FOO] = { .type = ..., .minlen = ..., .maxlen = ... },
+- * };
+- *
+- * err = nla_validate(attrs, attrlen, ATTR_MAX, &my_policy);
+- * @endcode
+- *
+- * Some basic validations are performed on every attribute, regardless of type.
+- * - If the attribute type exceeds the maximum attribute type specified or
+- *   the attribute type is lesser-or-equal than zero, the attribute will
+- *   be silently ignored.
+- * - If the payload length falls below the \a minlen value the attribute
+- *   will be rejected.
+- * - If \a maxlen is non-zero and the payload length exceeds the \a maxlen
+- *   value the attribute will be rejected.
+- *
+- *
+- * @par Unspecific Attribute (NLA_UNSPEC)
+- * This is the standard type if no type is specified. It is used for
+- * binary data of arbitary length. Typically this attribute carries
+- * a binary structure or a stream of bytes.
+- * @par
+- * @code
+- * // In this example, we will assume a binary structure requires to
+- * // be transmitted. The definition of the structure will typically
+- * // go into a header file available to both the kernel and userspace
+- * // side.
+- * //
+- * // Note: Be careful when putting 64 bit data types into a structure.
+- * // The attribute payload is only aligned to 4 bytes, dereferencing
+- * // the member may fail.
+- * struct my_struct {
+- *     int a;
+- *     int b;
+- * };
+- *
+- * // The validation function will not enforce an exact length match to
+- * // allow structures to grow as required. Note: While it is allowed
+- * // to add members to the end of the structure, changing the order or
+- * // inserting members in the middle of the structure will break your
+- * // binary interface.
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- *     [ATTR_MY_STRICT] = { .type = NLA_UNSPEC,
+- *                          .minlen = sizeof(struct my_struct) },
+- *
+- * // The binary structure is appened to the message using nla_put()
+- * struct my_struct foo = { .a = 1, .b = 2 };
+- * nla_put(msg, ATTR_MY_STRUCT, sizeof(foo), &foo);
+- *
+- * // On the receiving side, a pointer to the structure pointing inside
+- * // the message payload is returned by nla_get().
+- * if (attrs[ATTR_MY_STRUCT])
+- *     struct my_struct *foo = nla_get(attrs[ATTR_MY_STRUCT]);
+- * @endcode
+- *
+- * @par Integers (NLA_U8, NLA_U16, NLA_U32, NLA_U64)
+- * Integers come in different sizes from 8 bit to 64 bit. However, since the
+- * payload length is aligned to 4 bytes, integers smaller than 32 bit are
+- * only useful to enforce the maximum range of values.
+- * @par
+- * \b Note: There is no difference made between signed and unsigned integers.
+- * The validation only enforces the minimal payload length required to store
+- * an integer of specified type.
+- * @par
+- * @code
+- * // Even though possible, it does not make sense to specify .minlen or
+- * // .maxlen for integer types. The data types implies the corresponding
+- * // minimal payload length.
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- *     [ATTR_FOO] = { .type = NLA_U32 },
+- *
+- * // Numeric values can be appended directly using the respective
+- * // nla_put_uxxx() function
+- * nla_put_u32(msg, ATTR_FOO, 123);
+- *
+- * // Same for the receiving side.
+- * if (attrs[ATTR_FOO])
+- *     uint32_t foo = nla_get_u32(attrs[ATTR_FOO]);
+- * @endcode
+- *
+- * @par Character string (NLA_STRING)
+- * This data type represents a NUL terminated character string of variable
+- * length. For binary data streams the type NLA_UNSPEC is recommended.
+- * @par
+- * @code
+- * // Enforce a NUL terminated character string of at most 4 characters
+- * // including the NUL termination.
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- *     [ATTR_BAR] = { .type = NLA_STRING, maxlen = 4 },
+- *
+- * // nla_put_string() creates a string attribute of the necessary length
+- * // and appends it to the message including the NUL termination.
+- * nla_put_string(msg, ATTR_BAR, "some text");
+- *
+- * // It is safe to use the returned character string directly if the
+- * // attribute has been validated as the validation enforces the proper
+- * // termination of the string.
+- * if (attrs[ATTR_BAR])
+- *     char *text = nla_get_string(attrs[ATTR_BAR]);
+- * @endcode
+- *
+- * @par Flag (NLA_FLAG)
+- * This attribute type may be used to indicate the presence of a flag. The
+- * attribute is only valid if the payload length is zero. The presence of
+- * the attribute header indicates the presence of the flag.
+- * @par
+- * @code
+- * // This attribute type is special as .minlen and .maxlen have no effect.
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- *     [ATTR_FLAG] = { .type = NLA_FLAG },
+- *
+- * // nla_put_flag() appends a zero sized attribute to the message.
+- * nla_put_flag(msg, ATTR_FLAG);
+- *
+- * // There is no need for a receival function, the presence is the value.
+- * if (attrs[ATTR_FLAG])
+- *     // flag is present
+- * @endcode
+- *
+- * @par Micro Seconds (NLA_MSECS)
+- *
+- * @par Nested Attribute (NLA_NESTED)
+- * Attributes can be nested and put into a container to create groups, lists
+- * or to construct trees of attributes. Nested attributes are often used to
+- * pass attributes to a subsystem where the top layer has no knowledge of the
+- * configuration possibilities of each subsystem.
+- * @par
+- * \b Note: When validating the attributes using nlmsg_validate() or
+- * nlmsg_parse() it will only affect the top level attributes. Each
+- * level of nested attributes must be validated seperately using
+- * nla_parse_nested() or nla_validate().
+- * @par
+- * @code
+- * // The minimal length policy may be used to enforce the presence of at
+- * // least one attribute.
+- * static struct nla_policy my_policy[ATTR_MAX+1] = {
+- *     [ATTR_OPTS] = { .type = NLA_NESTED, minlen = NLA_HDRLEN },
+- *
+- * // Nested attributes are constructed by enclosing the attributes
+- * // to be nested with calls to nla_nest_start() respetively nla_nest_end().
+- * struct nlattr *opts = nla_nest_start(msg, ATTR_OPTS);
+- * nla_put_u32(msg, ATTR_FOO, 123);
+- * nla_put_string(msg, ATTR_BAR, "some text");
+- * nla_nest_end(msg, opts);
+- *
+- * // Various methods exist to parse nested attributes, the easiest being
+- * // nla_parse_nested() which also allows validation in the same step.
+- * if (attrs[ATTR_OPTS]) {
+- *     struct nlattr *nested[ATTR_MAX+1];
+- *
+- *     nla_parse_nested(nested, ATTR_MAX, attrs[ATTR_OPTS], &policy);
+- *
+- *     if (nested[ATTR_FOO])
+- *         uint32_t foo = nla_get_u32(nested[ATTR_FOO]);
+- * }
+- * @endcode
+- *
+- * @subsection attr_exceptions Exception Based Attribute Construction
+- * Often a large number of attributes are added to a message in a single
+- * function. In order to simplify error handling, a second set of
+- * construction functions exist which jump to a error label when they
+- * fail instead of returning an error code. This second set consists
+- * of macros which are named after their error code based counterpart
+- * except that the name is written all uppercase.
+- *
+- * All of the macros jump to the target \c nla_put_failure if they fail.
+- * @code
+- * void my_func(struct nl_msg *msg)
+- * {
+- *     NLA_PUT_U32(msg, ATTR_FOO, 10);
+- *     NLA_PUT_STRING(msg, ATTR_BAR, "bar");
+- *
+- *     return 0;
+- *
+- * nla_put_failure:
+- *     return -NLE_NOMEM;
+- * }
+- * @endcode
+- *
+- * @subsection attr_examples Examples
+- * @par Example 1.1 Constructing a netlink message with attributes.
+- * @code
+- * struct nl_msg *build_msg(int ifindex, struct nl_addr *lladdr, int mtu)
+- * {
+- *     struct nl_msg *msg;
+- *     struct nlattr *info, *vlan;
+- *     struct ifinfomsg ifi = {
+- *         .ifi_family = AF_INET,
+- *         .ifi_index = ifindex,
+- *     };
+- *
+- *     // Allocate a new netlink message, type=RTM_SETLINK, flags=NLM_F_ECHO
+- *     if (!(msg = nlmsg_alloc_simple(RTM_SETLINK, NLM_F_ECHO)))
+- *         return NULL;
+- *
+- *     // Append the family specific header (struct ifinfomsg)
+- *     if (nlmsg_append(msg, &ifi, sizeof(ifi), NLMSG_ALIGNTO) < 0)
+- *         goto nla_put_failure
+- *
+- *     // Append a 32 bit integer attribute to carry the MTU
+- *     NLA_PUT_U32(msg, IFLA_MTU, mtu);
+- *
+- *     // Append a unspecific attribute to carry the link layer address
+- *     NLA_PUT_ADDR(msg, IFLA_ADDRESS, lladdr);
+- *
+- *     // Append a container for nested attributes to carry link information
+- *     if (!(info = nla_nest_start(msg, IFLA_LINKINFO)))
+- *         goto nla_put_failure;
+- *
+- *     // Put a string attribute into the container
+- *     NLA_PUT_STRING(msg, IFLA_INFO_KIND, "vlan");
+- *
+- *     // Append another container inside the open container to carry
+- *     // vlan specific attributes
+- *     if (!(vlan = nla_nest_start(msg, IFLA_INFO_DATA)))
+- *         goto nla_put_failure;
+- *
+- *     // add vlan specific info attributes here...
+- *
+- *     // Finish nesting the vlan attributes and close the second container.
+- *     nla_nest_end(msg, vlan);
+- *
+- *     // Finish nesting the link info attribute and close the first container.
+- *     nla_nest_end(msg, info);
+- *
+- *     return msg;
+- *
+- * // If any of the construction macros fails, we end up here.
+- * nla_put_failure:
+- *     nlmsg_free(msg);
+- *     return NULL;
+- * }
+- * @endcode
+- *
+- * @par Example 2.1 Parsing a netlink message with attributes.
+- * @code
+- * int parse_message(struct nl_msg *msg)
+- * {
+- *     // The policy defines two attributes: a 32 bit integer and a container
+- *     // for nested attributes.
+- *     struct nla_policy attr_policy[ATTR_MAX+1] = {
+- *         [ATTR_FOO] = { .type = NLA_U32 },
+- *         [ATTR_BAR] = { .type = NLA_NESTED },
+- *     };
+- *     struct nlattr *attrs[ATTR_MAX+1];
+- *     int err;
+- *
+- *     // The nlmsg_parse() function will make sure that the message contains
+- *     // enough payload to hold the header (struct my_hdr), validates any
+- *     // attributes attached to the messages and stores a pointer to each
+- *     // attribute in the attrs[] array accessable by attribute type.
+- *     if ((err = nlmsg_parse(nlmsg_hdr(msg), sizeof(struct my_hdr), attrs,
+- *                            ATTR_MAX, attr_policy)) < 0)
+- *         goto errout;
+- *
+- *     if (attrs[ATTR_FOO]) {
+- *         // It is safe to directly access the attribute payload without
+- *         // any further checks since nlmsg_parse() enforced the policy.
+- *         uint32_t foo = nla_get_u32(attrs[ATTR_FOO]);
+- *     }
+- *
+- *     if (attrs[ATTR_BAR]) {
+- *         struct nlattr *nested[NESTED_MAX+1];
+- *
+- *         // Attributes nested in a container can be parsed the same way
+- *         // as top level attributes.
+- *         if ((err = nla_parse_nested(nested, NESTED_MAX, attrs[ATTR_BAR],
+- *                                     nested_policy)) < 0)
+- *             goto errout;
+- *
+- *         // Process nested attributes here.
+- *     }
+- *
+- *     err = 0;
+- * errout:
+- *     return err;
+- * }
+- * @endcode
++ * Related sections in the development guide:
++ * - @core_doc{core_attr,Netlink Attributes}
+  *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/attr.h>
++ * ~~~~
+  */
+ 
+ /**
+@@ -628,8 +288,7 @@ errout:
+  * than the maximum type specified will be silently ignored in order to
+  * maintain backwards compatibility.
+  *
+- * See \ref attr_datatypes for more details on what kind of validation
+- * checks are performed on each attribute data type.
++ * See section @core_doc{core_attr_parse,Attribute Parsing} for more details.
+  *
+  * @return 0 on success or a negative error code.
+  */
+diff --git a/lib/cache.c b/lib/cache.c
+index 814c616..5cfae67 100644
+--- a/lib/cache.c
++++ b/lib/cache.c
+@@ -37,7 +37,16 @@
+  *                                |      |                 Core Netlink
+  * @endcode
+  * 
++ * Related sections in the development guide:
++ * - @core_doc{core_cache, Caching System}
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/cache.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/cache_mngr.c b/lib/cache_mngr.c
+index 0f0df51..cdf2b7b 100644
+--- a/lib/cache_mngr.c
++++ b/lib/cache_mngr.c
+@@ -12,9 +12,24 @@
+ /**
+  * @ingroup cache_mngt
+  * @defgroup cache_mngr Manager
+- * @brief Automatically keep caches up to date
++ * @brief Manager keeping caches up to date automatically.
++ *
++ * The cache manager keeps caches up to date automatically by listening to
++ * netlink notifications and integrating the received information into the
++ * existing cache.
++ *
++ * @note This functionality is still considered experimental.
++ *
++ * Related sections in the development guide:
++ * - @core_doc{_cache_manager,Cache Manager}
+  *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/cache.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/cache_mngt.c b/lib/cache_mngt.c
+index a9ecf27..6691454 100644
+--- a/lib/cache_mngt.c
++++ b/lib/cache_mngt.c
+@@ -6,13 +6,23 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+  * @ingroup core
+- * @defgroup cache_mngt Caching
++ * @defgroup cache_mngt Caching System
++ *
++ * Related sections in the development guide:
++ * - @core_doc{core_cache, Caching System}
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/cache.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/data.c b/lib/data.c
+index 03cd9fe..e4196b1 100644
+--- a/lib/data.c
++++ b/lib/data.c
+@@ -6,13 +6,25 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @ingroup core
++ * @ingroup core_types
+  * @defgroup data Abstract Data
++ *
++ * Abstract data type representing a binary data blob.
++ *
++ * Related sections in the development guide:
++ * - @core_doc{_abstract_data, Abstract Data}
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/data.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/fib_lookup/lookup.c b/lib/fib_lookup/lookup.c
+index 6018251..ec82c16 100644
+--- a/lib/fib_lookup/lookup.c
++++ b/lib/fib_lookup/lookup.c
+@@ -6,10 +6,11 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
++ * @ingroup rtnl
+  * @defgroup fib_lookup FIB Lookup
+  * @brief
+  * @{
+diff --git a/lib/genl/genl.c b/lib/genl/genl.c
+index 055be91..6e6a764 100644
+--- a/lib/genl/genl.c
++++ b/lib/genl/genl.c
+@@ -6,11 +6,11 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @defgroup genl Generic Netlink
++ * @defgroup genl Generic Netlink Library (libnl-genl)
+  *
+  * @par Message Format
+  * @code
+diff --git a/lib/handlers.c b/lib/handlers.c
+index f13b89e..74276a1 100644
+--- a/lib/handlers.c
++++ b/lib/handlers.c
+@@ -13,21 +13,16 @@
+  * @ingroup core
+  * @defgroup cb Callbacks/Customization
+  *
+- * @details
+- * @par 1) Setting up a callback set
+- * @code
+- * // Allocate a callback set and initialize it to the verbose default set
+- * struct nl_cb *cb = nl_cb_alloc(NL_CB_VERBOSE);
++ * Related sections in the development guide:
++ * - @core_doc{core_cb, Callback Configuration}
+  *
+- * // Modify the set to call my_func() for all valid messages
+- * nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, my_func, NULL);
+- *
+- * // Set the error message handler to the verbose default implementation
+- * // and direct it to print all errors to the given file descriptor.
+- * FILE *file = fopen(...);
+- * nl_cb_err(cb, NL_CB_VERBOSE, NULL, file);
+- * @endcode
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/handlers.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/msg.c b/lib/msg.c
+index 235ee82..18174b5 100644
+--- a/lib/msg.c
++++ b/lib/msg.c
+@@ -6,156 +6,24 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+  * @ingroup core
+- * @defgroup msg Messages
++ * @defgroup msg Message Construction & Parsing
+  * Netlink Message Construction/Parsing Interface
+  * 
+- * The following information is partly extracted from RFC3549
+- * (ftp://ftp.rfc-editor.org/in-notes/rfc3549.txt)
++ * Related sections in the development guide:
++ * - @core_doc{_message_parsing_amp_construction,Message Parsing & Construction}
+  *
+- * @par Message Format
+- * Netlink messages consist of a byte stream with one or multiple
+- * Netlink headers and an associated payload.  If the payload is too big
+- * to fit into a single message it, can be split over multiple Netlink
+- * messages, collectively called a multipart message.  For multipart
+- * messages, the first and all following headers have the \c NLM_F_MULTI
+- * Netlink header flag set, except for the last header which has the
+- * Netlink header type \c NLMSG_DONE.
+- *
+- * @par
+- * The Netlink message header (struct nlmsghdr) is shown below.
+- * @code   
+- * 0                   1                   2                   3
+- * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                          Length                             |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |            Type              |           Flags              |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                      Sequence Number                        |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                      Process ID (PID)                       |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * @endcode
+- *
+- * @par
+- * The netlink message header and payload must be aligned properly:
+- * @code
+- *  <------- NLMSG_ALIGN(hlen) ------> <---- NLMSG_ALIGN(len) --->
+- * +----------------------------+- - -+- - - - - - - - - - -+- - -+
+- * |           Header           | Pad |       Payload       | Pad |
+- * |      struct nlmsghdr       |     |                     |     |
+- * +----------------------------+- - -+- - - - - - - - - - -+- - -+
+- * @endcode
+- * @par
+- * Message Format:
+- * @code
+- *    <--- nlmsg_total_size(payload)  --->
+- *    <-- nlmsg_msg_size(payload) ->
+- *   +----------+- - -+-------------+- - -+-------- - -
+- *   | nlmsghdr | Pad |   Payload   | Pad | nlmsghdr
+- *   +----------+- - -+-------------+- - -+-------- - -
+- *   nlmsg_data(nlh)---^                   ^
+- *   nlmsg_next(nlh)-----------------------+
+- * @endcode
+- * @par
+- * The payload may consist of arbitary data but may have strict
+- * alignment and formatting rules depening on the specific netlink
+- * families.
+- * @par
+- * @code
+- *    <---------------------- nlmsg_len(nlh) --------------------->
+- *    <------ hdrlen ------>       <- nlmsg_attrlen(nlh, hdrlen) ->
+- *   +----------------------+- - -+--------------------------------+
+- *   |     Family Header    | Pad |           Attributes           |
+- *   +----------------------+- - -+--------------------------------+
+- *   nlmsg_attrdata(nlh, hdrlen)---^
+- * @endcode
+- * @par The ACK Netlink Message
+- * This message is actually used to denote both an ACK and a NACK.
+- * Typically, the direction is from FEC to CPC (in response to an ACK
+- * request message).  However, the CPC should be able to send ACKs back
+- * to FEC when requested.
+- * @code
+- *  0                   1                   2                   3
+- *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                       Netlink message header                  |
+- * |                       type = NLMSG_ERROR                      |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                          Error code                           |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * |                       OLD Netlink message header              |
+- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+- * @endcode
+- *
+- * @par Example
+- * @code
+- * // Various methods exist to create/allocate a new netlink
+- * // message. 
+- * //
+- * // nlmsg_alloc() will allocate an empty netlink message with
+- * // a maximum payload size which defaults to the page size of
+- * // the system. This default size can be modified using the
+- * // function nlmsg_set_default_size().
+- * struct nl_msg *msg = nlmsg_alloc();
+- *
+- * // Very often, the message type and message flags are known
+- * // at allocation time while the other fields are auto generated:
+- * struct nl_msg *msg = nlmsg_alloc_simple(MY_TYPE, MY_FLAGS);
+- *
+- * // Alternatively an existing netlink message header can be used
+- * // to inherit the header values:
+- * struct nlmsghdr hdr = {
+- * 	.nlmsg_type = MY_TYPE,
+- * 	.nlmsg_flags = MY_FLAGS,
+- * };
+- * struct nl_msg *msg = nlmsg_inherit(&hdr);
+- *
+- * // Last but not least, netlink messages received from netlink sockets
+- * // can be converted into nl_msg objects using nlmsg_convert(). This
+- * // will create a message with a maximum payload size which equals the
+- * // length of the existing netlink message, therefore no more data can
+- * // be appened without calling nlmsg_expand() first.
+- * struct nl_msg *msg = nlmsg_convert(nlh_from_nl_sock);
+- *
+- * // Payload may be added to the message via nlmsg_append(). The fourth
+- * // parameter specifies the number of alignment bytes the data should
+- * // be padding with at the end. Common values are 0 to disable it or
+- * // NLMSG_ALIGNTO to ensure proper netlink message padding.
+- * nlmsg_append(msg, &mydata, sizeof(mydata), 0);
+- *
+- * // Sometimes it may be necessary to reserve room for data but defer
+- * // the actual copying to a later point, nlmsg_reserve() can be used
+- * // for this purpose:
+- * void *data = nlmsg_reserve(msg, sizeof(mydata), NLMSG_ALIGNTO);
+- *
+- * // Attributes may be added using the attributes interface.
+- *
+- * // After successful use of the message, the memory must be freed
+- * // using nlmsg_free()
+- * nlmsg_free(msg);
+- * @endcode
+- * 
+- * @par 4) Parsing messages
+- * @code
+- * int n;
+- * unsigned char *buf;
+- * struct nlmsghdr *hdr;
+- *
+- * n = nl_recv(handle, NULL, &buf);
+- * 
+- * hdr = (struct nlmsghdr *) buf;
+- * while (nlmsg_ok(hdr, n)) {
+- * 	// Process message here...
+- * 	hdr = nlmsg_next(hdr, &n);
+- * }
+- * @endcode
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/msg.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/netfilter/nfnl.c b/lib/netfilter/nfnl.c
+index ddce4b9..6d27c44 100644
+--- a/lib/netfilter/nfnl.c
++++ b/lib/netfilter/nfnl.c
+@@ -6,13 +6,13 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  * Copyright (c) 2007 Philip Craig <philipc@snapgear.com>
+  * Copyright (c) 2007 Secure Computing Corporation
+  */
+ 
+ /**
+- * @defgroup nfnl Netfilter Netlink
++ * @defgroup nfnl Netfilter Library (libnl-nf)
+  *
+  * @par Message Format
+  * @code
+diff --git a/lib/nl.c b/lib/nl.c
+index 7e59130..64e1382 100644
+--- a/lib/nl.c
++++ b/lib/nl.c
+@@ -6,78 +6,22 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @defgroup core Core
+- *
+- * @details
+- * @par 1) Connecting the socket
+- * @code
+- * // Bind and connect the socket to a protocol, NETLINK_ROUTE in this example.
+- * nl_connect(sk, NETLINK_ROUTE);
+- * @endcode
+- *
+- * @par 2) Sending data
+- * @code
+- * // The most rudimentary method is to use nl_sendto() simply pushing
+- * // a piece of data to the other netlink peer. This method is not
+- * // recommended.
+- * const char buf[] = { 0x01, 0x02, 0x03, 0x04 };
+- * nl_sendto(sk, buf, sizeof(buf));
+- *
+- * // A more comfortable interface is nl_send() taking a pointer to
+- * // a netlink message.
+- * struct nl_msg *msg = my_msg_builder();
+- * nl_send(sk, nlmsg_hdr(msg));
+- *
+- * // nl_sendmsg() provides additional control over the sendmsg() message
+- * // header in order to allow more specific addressing of multiple peers etc.
+- * struct msghdr hdr = { ... };
+- * nl_sendmsg(sk, nlmsg_hdr(msg), &hdr);
+- *
+- * // You're probably too lazy to fill out the netlink pid, sequence number
+- * // and message flags all the time. nl_send_auto_complete() automatically
+- * // extends your message header as needed with an appropriate sequence
+- * // number, the netlink pid stored in the netlink socket and the message
+- * // flags NLM_F_REQUEST and NLM_F_ACK (if not disabled in the socket)
+- * nl_send_auto_complete(sk, nlmsg_hdr(msg));
+- *
+- * // Simple protocols don't require the complex message construction interface
+- * // and may favour nl_send_simple() to easly send a bunch of payload
+- * // encapsulated in a netlink message header.
+- * nl_send_simple(sk, MY_MSG_TYPE, 0, buf, sizeof(buf));
+- * @endcode
+- *
+- * @par 3) Receiving data
+- * @code
+- * // nl_recv() receives a single message allocating a buffer for the message
+- * // content and gives back the pointer to you.
+- * struct sockaddr_nl peer;
+- * unsigned char *msg;
+- * nl_recv(sk, &peer, &msg);
+- *
+- * // nl_recvmsgs() receives a bunch of messages until the callback system
+- * // orders it to state, usually after receving a compolete multi part
+- * // message series.
+- * nl_recvmsgs(sk, my_callback_configuration);
+- *
+- * // nl_recvmsgs_default() acts just like nl_recvmsg() but uses the callback
+- * // configuration stored in the socket.
+- * nl_recvmsgs_default(sk);
+- *
+- * // In case you want to wait for the ACK to be recieved that you requested
+- * // with your latest message, you can call nl_wait_for_ack()
+- * nl_wait_for_ack(sk);
+- * @endcode
+- *
+- * @par 4) Closing
+- * @code
+- * // Close the socket first to release kernel memory
+- * nl_close(sk);
+- * @endcode
+- * 
++ * @defgroup core Core Library (libnl)
++ *
++ * Socket handling, connection management, sending and receiving of data,
++ * message construction and parsing, object caching system, ...
++ *
++ * This is the API reference of the core library. It is not meant as a guide
++ * but as a reference. Please refer to the core library guide for detailed
++ * documentation on the library architecture and examples:
++ *
++ * * @ref_asciidoc{core,_,Netlink Core Library Development Guide}
++ *
++ *
+  * @{
+  */
+ 
+@@ -89,6 +33,30 @@
+ #include <netlink/attr.h>
+ 
+ /**
++ * @defgroup core_types Data Types
++ *
++ * Core library data types
++ * @{
++ * @}
++ *
++ * @defgroup send_recv Send & Receive Data
++ *
++ * Connection management, sending & receiving of data
++ *
++ * Related sections in the development guide:
++ * - @core_doc{core_send_recv, Sending & Receiving}
++ * - @core_doc{core_sockets, Sockets}
++ *
++ * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/netlink.h>
++ * ~~~~
++ */
++
++/**
+  * @name Connection Management
+  * @{
+  */
+@@ -541,6 +509,7 @@ abort:
+ 	return 0;
+ }
+ 
++/** @cond SKIP */
+ #define NL_CB_CALL(cb, type, msg) \
+ do { \
+ 	err = nl_cb_call(cb, type, msg); \
+@@ -556,6 +525,7 @@ do { \
+ 		goto out; \
+ 	} \
+ } while (0)
++/** @endcond */
+ 
+ static int recvmsgs(struct nl_sock *sk, struct nl_cb *cb)
+ {
+@@ -923,3 +893,5 @@ errout:
+ /** @} */
+ 
+ /** @} */
++
++/** @} */
+diff --git a/lib/object.c b/lib/object.c
+index 554d09b..7606535 100644
+--- a/lib/object.c
++++ b/lib/object.c
+@@ -10,9 +10,21 @@
+  */
+ 
+ /**
+- * @ingroup cache
+- * @defgroup object Object
++ * @ingroup core_types
++ * @defgroup object Object (Cacheable)
++ *
++ * Generic object data type, for inheritance purposes to implement cacheable
++ * data types.
++ *
++ * Related sections in the development guide:
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/object.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+diff --git a/lib/route/link.c b/lib/route/link.c
+index 4da40a0..0a17110 100644
+--- a/lib/route/link.c
++++ b/lib/route/link.c
+@@ -1442,8 +1442,7 @@ struct rtnl_link *rtnl_link_alloc(void)
+ 
+ /**
+  * Return a link object reference
+- *
+- * @copydetails nl_object_put()
++ * @arg link		Link object
+  */
+ void rtnl_link_put(struct rtnl_link *link)
+ {
+diff --git a/lib/route/rtnl.c b/lib/route/rtnl.c
+index e5c0798..12a7e97 100644
+--- a/lib/route/rtnl.c
++++ b/lib/route/rtnl.c
+@@ -6,11 +6,11 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @defgroup rtnl Routing Family
++ * @defgroup rtnl Routing Library (libnl-route)
+  * @{
+  */
+ 
+diff --git a/lib/socket.c b/lib/socket.c
+index 01b9872..7e3ebf6 100644
+--- a/lib/socket.c
++++ b/lib/socket.c
+@@ -6,13 +6,25 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+- * @ingroup core
++ * @ingroup core_types
+  * @defgroup socket Socket
++ *
++ * Representation of a netlink socket
++ *
++ * Related sections in the development guide:
++ * - @core_doc{core_sockets, Netlink Sockets}
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/socket.h>
++ * ~~~~
+  */
+ 
+ #include <pthread.h>
+diff --git a/lib/utils.c b/lib/utils.c
+index 83d424f..5a35a53 100644
+--- a/lib/utils.c
++++ b/lib/utils.c
+@@ -6,13 +6,22 @@
+  *	License as published by the Free Software Foundation version 2.1
+  *	of the License.
+  *
+- * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
++ * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
+  */
+ 
+ /**
+  * @ingroup core
+  * @defgroup utils Utilities
++ *
++ * Collection of helper functions
++ *
+  * @{
++ *
++ * Header
++ * ------
++ * ~~~~{.c}
++ * #include <netlink/utils.h>
++ * ~~~~
+  */
+ 
+ #include <netlink-local.h>
+@@ -21,10 +30,24 @@
+ #include <linux/socket.h>
+ 
+ /**
+- * Debug level
++ * Global variable indicating the desired level of debugging output.
++ *
++ * Level | Messages Printed
++ * ----- | ---------------------------------------------------------
++ *     0 | Debugging output disabled
++ *     1 | Warnings, important events and notifications
++ *     2 | More or less important debugging messages
++ *     3 | Repetitive events causing a flood of debugging messages
++ *     4 | Even less important messages
++ *
++ * If available, the variable will be initialized to the value of the
++ * environment variable `NLDBG`. The default value is 0 (disabled).
++ *
++ * For more information, see section @core_doc{_debugging, Debugging}.
+  */
+ int nl_debug = 0;
+ 
++/** @cond SKIP */
+ struct nl_dump_params nl_debug_dp = {
+ 	.dp_type = NL_DUMP_DETAILS,
+ };
+@@ -84,9 +107,10 @@ int __nl_read_num_str_file(const char *path, int (*cb)(long, const char *))
+ 
+ 	return 0;
+ }
++/** @endcond */
+ 
+ /**
+- * @name Unit Pretty-Printing
++ * @name Pretty Printing of Numbers
+  * @{
+  */
+ 
+-- 
+1.7.6.5
+

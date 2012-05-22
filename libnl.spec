@@ -5,15 +5,18 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.7
+Version:	3.2.9
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	6a233a9dffa0ee3a7f6110c95c5410ab
+# Source0-md5:	c13adec0239b266207fff07d79e5ce9e
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
+Patch2:		libnl.git-183e86913aab58acf7b5b9cd160518e527bb0348.patch
+Patch3:		libnl.git-2fbab02ba8c7b0a418c9d89c2c6db89dd4efd0eb.patch
+Patch4:		libnl.git-fec10a282355def49133e63b8a4591cc51b46478.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -27,16 +30,13 @@ BuildRequires:	swig-python
 %if %{with apidocs}
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
-BuildRequires:	doxygen
+BuildRequires:	doxygen >= 1.8.0
 BuildRequires:	mscgen
 BuildRequires:	python-pygments
 BuildRequires:	tetex-dvips
 BuildRequires:	tetex-format-latex
-BuildRequires:	xmlstarlet >= 1.2.1
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%define		skip_post_check_so	bfifo.so.0.0.0 blackhole.so.0.0.0 htb.so.0.0.0 pfifo.so.0.0.0 basic.so.0.0.0 cgroup.so.0.0.0
 
 %description
 libnl is a library for applications dealing with netlink socket. It
@@ -102,6 +102,9 @@ Pythonowy interfejs do protokołów netlink.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %{__libtoolize}
@@ -147,6 +150,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/libnl
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libnl/classid
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libnl/pktloc
+%attr(755,root,root) %{_sbindir}/genl-ctrl-list
 %attr(755,root,root) %{_sbindir}/nl-class-*
 %attr(755,root,root) %{_sbindir}/nl-classid-lookup
 %attr(755,root,root) %{_sbindir}/nl-cls-*
@@ -169,6 +173,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl/cli/cls/*.so*
 %dir %{_libdir}/libnl/cli/qdisc
 %attr(755,root,root) %{_libdir}/libnl/cli/qdisc/*.so*
+%{_mandir}/man8/genl-ctrl-list.8*
 %{_mandir}/man8/nl-classid-lookup.8*
 %{_mandir}/man8/nl-pktloc-lookup.8*
 %{_mandir}/man8/nl-qdisc-*.8*
