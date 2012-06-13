@@ -5,18 +5,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.9
+Version:	3.2.11
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	c13adec0239b266207fff07d79e5ce9e
+# Source0-md5:	7a35f3a17b52f41ee120dceb99b2ef72
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
-Patch2:		libnl.git-183e86913aab58acf7b5b9cd160518e527bb0348.patch
-Patch3:		libnl.git-2fbab02ba8c7b0a418c9d89c2c6db89dd4efd0eb.patch
-Patch4:		libnl.git-fec10a282355def49133e63b8a4591cc51b46478.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -102,9 +99,6 @@ Pythonowy interfejs do protokołów netlink.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
 %build
 %{__libtoolize}
