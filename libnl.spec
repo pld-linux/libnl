@@ -5,13 +5,13 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.12
+Version:	3.2.13
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	176d15060248f8cb0d9ce2ee33e62b86
+# Source0-md5:	5f1c6fcf4f56aafbc4bf13ec6ef80cbf
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
