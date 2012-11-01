@@ -5,13 +5,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.13
+Version:	3.2.14
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	5f1c6fcf4f56aafbc4bf13ec6ef80cbf
+# Source0-md5:	81d44f530aa0af1638a220c413baec05
+Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	90ed59f501bf39ff58028ecbc8b6026d
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -24,7 +26,8 @@ BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRequires:	python-devel >= 1:2.6
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
-%if %{with apidocs}
+%if 0 && %{with apidocs}
+# no docs sources in 3.2.14
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
 BuildRequires:	doxygen >= 1.8.0
@@ -96,7 +99,8 @@ Python wrapper for netlink protocols.
 Pythonowy interfejs do protokołów netlink.
 
 %prep
-%setup -q
+%setup -q -a1
+mv -f libnl-doc-%{version} libnl-doc
 %patch0 -p1
 %patch1 -p1
 
@@ -110,7 +114,11 @@ Pythonowy interfejs do protokołów netlink.
 	--disable-silent-rules
 
 %{__make}
+
+%if 0
+# no docs sources in 3.2.14
 %{?with_apidocs:%{__make} -j1 -C doc gendoc}
+%endif
 
 cd python
 CFLAGS="%{rpmcflags}" \
@@ -202,7 +210,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with apidocs}
 %files apidocs
 %defattr(644,root,root,755)
-%doc doc/{*.html,api,images}
+%doc libnl-doc/{*.html,libnl.css,api,images,stylesheets}
 %endif
 
 %files -n python-netlink
