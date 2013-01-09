@@ -5,15 +5,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.17
+Version:	3.2.18
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	2e57ef6ced666b0288a8a205b9a0ad00
+# Source0-md5:	378eafcca1f51d1c7498d78946cd891a
 Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	e823c74872f59c8b9406eabc74de1f1b
+# Source1-md5:	98e797fee158314f3f5956b2723455ce
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -27,12 +27,14 @@ BuildRequires:	python-devel >= 1:2.6
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
 %if 0 && %{with apidocs}
-# no docs sources in 3.2.14
+# no docs Makefile 3.2.18
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
 BuildRequires:	doxygen >= 1.8.0
+BuildRequires:	graphviz
 BuildRequires:	mscgen
 BuildRequires:	python-pygments
+BuildRequires:	source-highlight
 BuildRequires:	tetex-dvips
 BuildRequires:	tetex-format-latex
 %endif
@@ -100,7 +102,7 @@ Pythonowy interfejs do protokołów netlink.
 
 %prep
 %setup -q -a1
-mv -f libnl-doc-%{version} libnl-doc
+mv -f libnl-doc-%{version} doc
 %patch0 -p1
 %patch1 -p1
 
@@ -111,12 +113,13 @@ mv -f libnl-doc-%{version} libnl-doc
 %{__autoheader}
 %{__automake}
 %configure \
+	%{!?with_apidocs:--disable-doc} \
 	--disable-silent-rules
 
 %{__make}
 
 %if 0
-# no docs sources in 3.2.14 .. 3.2.17
+# no docs Makefile in 3.2.18
 %{?with_apidocs:%{__make} -j1 -C doc gendoc}
 %endif
 
@@ -160,15 +163,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/nl-pktloc-lookup
 %attr(755,root,root) %{_sbindir}/nl-qdisc-*
 %attr(755,root,root) %{_libdir}/libnl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.200
+%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.201
 %attr(755,root,root) %{_libdir}/libnl-cli-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.200
+%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.201
 %attr(755,root,root) %{_libdir}/libnl-genl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.200
+%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.201
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
+%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.201
 %attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.200
+%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.201
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
@@ -210,7 +213,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with apidocs}
 %files apidocs
 %defattr(644,root,root,755)
-%doc libnl-doc/{*.html,libnl.css,api,images,stylesheets}
+%doc doc/{*.html,libnl.css,api,images,stylesheets}
 %endif
 
 %files -n python-netlink
