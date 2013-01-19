@@ -5,19 +5,19 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.18
+Version:	3.2.19
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	378eafcca1f51d1c7498d78946cd891a
+# Source0-md5:	1795c43bde05f650a43b085438e5da21
 Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	98e797fee158314f3f5956b2723455ce
+# Source1-md5:	aafde3794ee6efcebfcb3b1db286095a
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	bison >= 2.4.0
 BuildRequires:	flex >= 2.5.34
