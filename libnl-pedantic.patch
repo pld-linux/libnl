@@ -10,18 +10,6 @@ diff -ur libnl-3.2.0.org/include/netlink/attr.h libnl-3.2.0/include/netlink/attr
  };
  
  #define NLA_TYPE_MAX (__NLA_TYPE_MAX - 1)
-diff -ur libnl-3.2.0.org/include/netlink/cache-api.h libnl-3.2.0/include/netlink/cache-api.h
---- libnl-3.2.0.org/include/netlink/cache-api.h	2011-08-16 16:16:01.000000000 +0200
-+++ libnl-3.2.0/include/netlink/cache-api.h	2011-09-17 08:56:41.585298135 +0200
-@@ -115,7 +115,7 @@
- 	NL_ACT_GET,
- 	NL_ACT_SET,
- 	NL_ACT_CHANGE,
--	__NL_ACT_MAX,
-+	__NL_ACT_MAX
- };
- 
- #define NL_ACT_MAX (__NL_ACT_MAX - 1)
 diff -ur libnl-3.2.0.org/include/netlink/handlers.h libnl-3.2.0/include/netlink/handlers.h
 --- libnl-3.2.0.org/include/netlink/handlers.h	2011-08-16 16:16:01.000000000 +0200
 +++ libnl-3.2.0/include/netlink/handlers.h	2011-09-17 08:57:06.462565163 +0200
@@ -106,10 +94,9 @@ diff -ur libnl-3.2.0.org/include/netlink/route/nexthop.h libnl-3.2.0/include/net
  	/* > 0 reserved for nexthop index */
  };
  
-diff -ur libnl-3.2.0.org/include/netlink/route/tc-api.h libnl-3.2.0/include/netlink/route/tc-api.h
---- libnl-3.2.0.org/include/netlink/route/tc-api.h	2011-08-16 16:16:01.000000000 +0200
-+++ libnl-3.2.0/include/netlink/route/tc-api.h	2011-09-17 08:58:26.867839643 +0200
-@@ -24,7 +24,7 @@
+--- libnl-3.2.21/include/netlink/route/tc.h.orig	2013-01-24 13:44:40.000000000 +0100
++++ libnl-3.2.21/include/netlink/route/tc.h	2013-01-26 11:34:19.482194536 +0100
+@@ -27,7 +27,7 @@
  	RTNL_TC_TYPE_QDISC,
  	RTNL_TC_TYPE_CLASS,
  	RTNL_TC_TYPE_CLS,
@@ -118,10 +105,7 @@ diff -ur libnl-3.2.0.org/include/netlink/route/tc-api.h libnl-3.2.0/include/netl
  };
  
  #define RTNL_TC_TYPE_MAX (__RTNL_TC_TYPE_MAX - 1)
-diff -ur libnl-3.2.0.org/include/netlink/route/tc.h libnl-3.2.0/include/netlink/route/tc.h
---- libnl-3.2.0.org/include/netlink/route/tc.h	2011-08-16 16:16:01.000000000 +0200
-+++ libnl-3.2.0/include/netlink/route/tc.h	2011-09-17 08:58:36.384736091 +0200
-@@ -63,7 +63,7 @@
+@@ -72,7 +72,7 @@
  	RTNL_TC_DROPS,		/**< Total number of packets dropped */
  	RTNL_TC_REQUEUES,	/**< Total number of requeues */
  	RTNL_TC_OVERLIMITS,	/**< Total number of overlimits */

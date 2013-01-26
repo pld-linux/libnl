@@ -5,15 +5,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.19
+Version:	3.2.21
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	1795c43bde05f650a43b085438e5da21
+# Source0-md5:	6fe7136558a9071e70673dcda38545b3
 Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	aafde3794ee6efcebfcb3b1db286095a
+# Source1-md5:	5505767f40d1e8092078fb6ee78f1fc6
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -27,7 +27,7 @@ BuildRequires:	python-devel >= 1:2.6
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
 %if 0 && %{with apidocs}
-# no docs Makefile 3.2.18
+# no docs Makefile up to 3.2.21
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
 BuildRequires:	doxygen >= 1.8.0
@@ -119,7 +119,7 @@ mv -f libnl-doc-%{version} doc
 %{__make}
 
 %if 0
-# no docs Makefile in 3.2.18
+# no docs Makefile up to 3.2.21
 %{?with_apidocs:%{__make} -j1 -C doc gendoc}
 %endif
 
@@ -163,15 +163,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/nl-pktloc-lookup
 %attr(755,root,root) %{_sbindir}/nl-qdisc-*
 %attr(755,root,root) %{_libdir}/libnl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.201
+%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-cli-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.201
+%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-genl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.201
+%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.201
+%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.201
+%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.200
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
