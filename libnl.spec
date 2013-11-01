@@ -1,28 +1,32 @@
 #
 # Conditional build:
 %bcond_without	apidocs		# don't build api docs
+%bcond_without	tests		# don't perform "make check"
 #
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.22
+Version:	3.2.23
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	2e1c889494d274aca24ce5f6a748e66e
+# Source0-md5:	438f8f0a3d46eb90771c9aa2af41590e
 Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	99eb05c8a42621fa427fe4e095f95831
+# Source1-md5:	9436f17611c258f27e51f9b37c86fc01
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
+Patch2:		%{name}-python.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	bison >= 2.4.0
+%{?with_tests:BuildRequires:	check >= 0.9.0}
 BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 6:2.6.23
+BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.6
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
@@ -105,6 +109,7 @@ Pythonowy interfejs do protokołów netlink.
 mv -f libnl-doc-%{version} doc
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__libtoolize}
@@ -127,6 +132,8 @@ cd python
 CFLAGS="%{rpmcflags}" \
 LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs" \
 %{__python} setup.py build
+
+%{?with_tests:%{__make} check}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -168,6 +175,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-genl-3.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-idiag-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-idiag-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
@@ -188,11 +197,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl-3.so
 %attr(755,root,root) %{_libdir}/libnl-cli-3.so
 %attr(755,root,root) %{_libdir}/libnl-genl-3.so
+%attr(755,root,root) %{_libdir}/libnl-idiag-3.so
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so
 %attr(755,root,root) %{_libdir}/libnl-route-3.so
 %{_libdir}/libnl-3.la
 %{_libdir}/libnl-cli-3.la
 %{_libdir}/libnl-genl-3.la
+%{_libdir}/libnl-idiag-3.la
 %{_libdir}/libnl-nf-3.la
 %{_libdir}/libnl-route-3.la
 %{_includedir}/libnl3
@@ -207,6 +218,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libnl-3.a
 %{_libdir}/libnl-cli-3.a
 %{_libdir}/libnl-genl-3.a
+%{_libdir}/libnl-idiag-3.a
 %{_libdir}/libnl-nf-3.a
 %{_libdir}/libnl-route-3.a
 
@@ -221,6 +233,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py_sitedir}/netlink
 %attr(755,root,root) %{py_sitedir}/netlink/_capi.so
 %{py_sitedir}/netlink/*.py[co]
+%dir %{py_sitedir}/netlink/genl
+%attr(755,root,root) %{py_sitedir}/netlink/genl/_capi.so
+%{py_sitedir}/netlink/genl/*.py[co]
 %dir %{py_sitedir}/netlink/route
 %attr(755,root,root) %{py_sitedir}/netlink/route/_capi.so
 %{py_sitedir}/netlink/route/*.py[co]
