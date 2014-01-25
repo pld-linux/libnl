@@ -6,18 +6,17 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.23
+Version:	3.2.24
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	438f8f0a3d46eb90771c9aa2af41590e
+# Source0-md5:	6e0e7bad0674749d930dd9f285343d55
 Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	9436f17611c258f27e51f9b37c86fc01
+# Source1-md5:	d1111959652bd6ad87b2071f61c8c20c
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-pedantic.patch
-Patch2:		%{name}-python.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -31,7 +30,7 @@ BuildRequires:	python-devel >= 1:2.6
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
 %if 0 && %{with apidocs}
-# no docs Makefile up to 3.2.21
+# no docs Makefile up to 3.2.24
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
 BuildRequires:	doxygen >= 1.8.0
@@ -109,7 +108,6 @@ Pythonowy interfejs do protokołów netlink.
 mv -f libnl-doc-%{version} doc
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 %{__libtoolize}
@@ -124,7 +122,7 @@ mv -f libnl-doc-%{version} doc
 %{__make}
 
 %if 0
-# no docs Makefile up to 3.2.21
+# no docs Makefile up to 3.2.24
 %{?with_apidocs:%{__make} -j1 -C doc gendoc}
 %endif
 

@@ -94,18 +94,18 @@ diff -ur libnl-3.2.0.org/include/netlink/route/nexthop.h libnl-3.2.0/include/net
  	/* > 0 reserved for nexthop index */
  };
  
---- libnl-3.2.21/include/netlink/route/tc.h.orig	2013-01-24 13:44:40.000000000 +0100
-+++ libnl-3.2.21/include/netlink/route/tc.h	2013-01-26 11:34:19.482194536 +0100
-@@ -27,7 +27,7 @@
- 	RTNL_TC_TYPE_QDISC,
+--- libnl-3.2.24/include/netlink/route/tc.h.orig	2013-12-20 10:58:48.000000000 +0100
++++ libnl-3.2.24/include/netlink/route/tc.h	2014-01-25 14:28:35.815740841 +0100
+@@ -28,7 +28,7 @@
  	RTNL_TC_TYPE_CLASS,
  	RTNL_TC_TYPE_CLS,
+ 	RTNL_TC_TYPE_ACT,
 -	__RTNL_TC_TYPE_MAX,
 +	__RTNL_TC_TYPE_MAX
  };
  
  #define RTNL_TC_TYPE_MAX (__RTNL_TC_TYPE_MAX - 1)
-@@ -72,7 +72,7 @@
+@@ -73,7 +73,7 @@
  	RTNL_TC_DROPS,		/**< Total number of packets dropped */
  	RTNL_TC_REQUEUES,	/**< Total number of requeues */
  	RTNL_TC_OVERLIMITS,	/**< Total number of overlimits */
