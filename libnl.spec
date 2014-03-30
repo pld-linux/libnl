@@ -2,12 +2,12 @@
 # Conditional build:
 %bcond_without	apidocs		# don't build api docs
 %bcond_without	tests		# don't perform "make check"
-#
+
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.2.24
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -82,6 +82,9 @@ Statyczna biblioteka libnl.
 Summary:	libnl library API documentation
 Summary(pl.UTF-8):	Dokumentacja API biblioteki libnl
 Group:		Documentation
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description apidocs
 Documentation for libnl library API and guides in HTML format
