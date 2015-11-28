@@ -7,7 +7,7 @@ Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.2.25
-Release:	2
+Release:	3
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
