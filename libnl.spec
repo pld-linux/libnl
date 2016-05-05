@@ -7,7 +7,7 @@ Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.2.25
-Release:	3
+Release:	4
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -130,9 +130,9 @@ mv -f libnl-doc-%{version} doc
 %endif
 
 cd python
-CFLAGS="%{rpmcflags}" \
-LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs" \
-%{__python} setup.py build
+CFLAGS="%{rpmcflags}"
+LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs"
+%py_build
 
 %{?with_tests:%{__make} check}
 
@@ -143,9 +143,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 cd python
-%{__python} setup.py install \
-	--optimize=2 \
-	--root=$RPM_BUILD_ROOT
+%py_install
 %py_postclean
 
 # dynamic modules
