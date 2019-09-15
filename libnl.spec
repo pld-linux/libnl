@@ -6,17 +6,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.2.25
-Release:	4
+Version:	3.5.0
+Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-# Source0-md5:	03f74d0cd5037cadc8cdfa313bbd195c
-Source1:	http://www.infradead.org/~tgr/libnl/files/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	641f73052d9f54e720efe1a476a20237
-Patch0:		%{name}-link.patch
-Patch1:		%{name}-pedantic.patch
+Source0:	https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
+# Source0-md5:	74ba57b1b1d6f9f92268aa8141d8e8e4
+Source1:	https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	43a1a6f0c39f32bee05287c06c500bce
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -109,8 +107,6 @@ Pythonowy interfejs do protokołów netlink.
 %prep
 %setup -q -a1
 mv -f libnl-doc-%{version} doc
-%patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -133,6 +129,7 @@ cd python
 CFLAGS="%{rpmcflags}"
 LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs"
 %py_build
+cd ..
 
 %{?with_tests:%{__make} check}
 
@@ -161,13 +158,29 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/libnl
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libnl/classid
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libnl/pktloc
-%attr(755,root,root) %{_sbindir}/genl-ctrl-list
-%attr(755,root,root) %{_sbindir}/nl-class-*
-%attr(755,root,root) %{_sbindir}/nl-classid-lookup
-%attr(755,root,root) %{_sbindir}/nl-cls-*
-%attr(755,root,root) %{_sbindir}/nl-link-list
-%attr(755,root,root) %{_sbindir}/nl-pktloc-lookup
-%attr(755,root,root) %{_sbindir}/nl-qdisc-*
+%attr(755,root,root) %{_bindir}/genl-ctrl-list
+%attr(755,root,root) %{_bindir}/idiag-socket-details
+%attr(755,root,root) %{_bindir}/nf-ct-*
+%attr(755,root,root) %{_bindir}/nf-exp-*
+%attr(755,root,root) %{_bindir}/nf-log
+%attr(755,root,root) %{_bindir}/nf-monitor
+%attr(755,root,root) %{_bindir}/nf-queue
+%attr(755,root,root) %{_bindir}/nl-addr-*
+%attr(755,root,root) %{_bindir}/nl-class-*
+%attr(755,root,root) %{_bindir}/nl-classid-lookup
+%attr(755,root,root) %{_bindir}/nl-cls-*
+%attr(755,root,root) %{_bindir}/nl-fib-lookup
+%attr(755,root,root) %{_bindir}/nl-link-*
+%attr(755,root,root) %{_bindir}/nl-list-*
+%attr(755,root,root) %{_bindir}/nl-monitor
+%attr(755,root,root) %{_bindir}/nl-neigh-*
+%attr(755,root,root) %{_bindir}/nl-neightbl-list
+%attr(755,root,root) %{_bindir}/nl-pktloc-lookup
+%attr(755,root,root) %{_bindir}/nl-qdisc-*
+%attr(755,root,root) %{_bindir}/nl-route-*
+%attr(755,root,root) %{_bindir}/nl-rule-list
+%attr(755,root,root) %{_bindir}/nl-tctree-list
+%attr(755,root,root) %{_bindir}/nl-util-addr
 %attr(755,root,root) %{_libdir}/libnl-3.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libnl-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-cli-3.so.*.*.*
@@ -180,6 +193,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
 %attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.200
+%attr(755,root,root) %{_libdir}/libnl-xfrm-3.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libnl-xfrm-3.so.200
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
@@ -199,18 +214,22 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libnl-idiag-3.so
 %attr(755,root,root) %{_libdir}/libnl-nf-3.so
 %attr(755,root,root) %{_libdir}/libnl-route-3.so
+%attr(755,root,root) %{_libdir}/libnl-xfrm-3.so
 %{_libdir}/libnl-3.la
 %{_libdir}/libnl-cli-3.la
 %{_libdir}/libnl-genl-3.la
 %{_libdir}/libnl-idiag-3.la
 %{_libdir}/libnl-nf-3.la
 %{_libdir}/libnl-route-3.la
+%{_libdir}/libnl-xfrm-3.la
 %{_includedir}/libnl3
 %{_pkgconfigdir}/libnl-3.0.pc
 %{_pkgconfigdir}/libnl-cli-3.0.pc
 %{_pkgconfigdir}/libnl-genl-3.0.pc
+%{_pkgconfigdir}/libnl-idiag-3.0.pc
 %{_pkgconfigdir}/libnl-nf-3.0.pc
 %{_pkgconfigdir}/libnl-route-3.0.pc
+%{_pkgconfigdir}/libnl-xfrm-3.0.pc
 
 %files static
 %defattr(644,root,root,755)
@@ -220,6 +239,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libnl-idiag-3.a
 %{_libdir}/libnl-nf-3.a
 %{_libdir}/libnl-route-3.a
+%{_libdir}/libnl-xfrm-3.a
 
 %if %{with apidocs}
 %files apidocs
