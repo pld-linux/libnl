@@ -1,13 +1,14 @@
 #
 # Conditional build:
 %bcond_without	apidocs		# don't build api docs
+%bcond_without	python		# don't build python netlink
 %bcond_without	tests		# don't perform "make check"
 
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.5.0
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -24,7 +25,7 @@ BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRequires:	pkgconfig
-BuildRequires:	python-devel >= 1:2.6
+%{?with_python:BuildRequires:	python-devel >= 1:2.6}
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	swig-python
 %if 0 && %{with apidocs}
@@ -123,11 +124,13 @@ mv -f libnl-doc-%{version} doc
 %{?with_apidocs:%{__make} -j1 -C doc gendoc}
 %endif
 
+%if %{with python}
 cd python
 CFLAGS="%{rpmcflags}"
 LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs"
 %py_build
 cd ..
+%endif
 
 %{?with_tests:%{__make} check}
 
@@ -137,9 +140,11 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%if %{with python}
 cd python
 %py_install
 %py_postclean
+%endif
 
 # dynamic modules
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.{la,a}
@@ -245,6 +250,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/{*.html,libnl.css,api,images,stylesheets}
 %endif
 
+%if %{with python}
 %files -n python-netlink
 %defattr(644,root,root,755)
 %dir %{py_sitedir}/netlink
@@ -261,3 +267,4 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py_sitedir}/netlink/route/qdisc
 %{py_sitedir}/netlink/route/qdisc/*.py[co]
 %{py_sitedir}/netlink-1.0-py*.egg-info
+%endif
