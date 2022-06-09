@@ -1,8 +1,9 @@
 #
 # Conditional build:
-%bcond_without	apidocs		# don't build api docs
-%bcond_without	python		# don't build python netlink
-%bcond_without	tests		# don't perform "make check"
+%bcond_without	apidocs		# API documentation
+%bcond_without	python		# Python netlink module
+%bcond_without	tests		# unit tests
+%bcond_with	net_tests	# unit tests using unshare for net ns
 
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
@@ -20,13 +21,14 @@ URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	bison >= 2.4.0
-%{?with_tests:BuildRequires:	check >= 0.9.0}
+%{?with_net_tests:BuildRequires:	check >= 0.9.0}
 BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRequires:	pkgconfig
 %{?with_python:BuildRequires:	python-devel >= 1:2.6}
 BuildRequires:	rpmbuild(macros) >= 1.219
+BuildRequires:	sed >= 4.0
 BuildRequires:	swig-python
 %if 0 && %{with apidocs}
 # no docs Makefile up to 3.2.24
@@ -105,7 +107,11 @@ Pythonowy interfejs do protokołów netlink.
 
 %prep
 %setup -q -a1
-mv -f libnl-doc-%{version} doc
+%{__mv} libnl-doc-%{version} doc
+
+%if %{without net_tests}
+%{__sed} -i -e 's/^AM_CONDITIONAL(WITH_CHECK.*/AM_CONDITIONAL(WITH_CHECK, false)/' configure.ac
+%endif
 
 %build
 %{__libtoolize}
