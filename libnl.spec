@@ -8,15 +8,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.6.0
+Version:	3.7.0
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	https://github.com/thom311/libnl/releases/download/libnl3_6_0/%{name}-%{version}.tar.gz
-# Source0-md5:	b3db700a55866b17036d0e035d88bb9d
-Source1:	https://github.com/thom311/libnl/releases/download/libnl3_6_0/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	aa2a121688c11b7ffd046290ee71f20d
+Source0:	https://github.com/thom311/libnl/releases/download/libnl3_7_0/%{name}-%{version}.tar.gz
+# Source0-md5:	b381405afd14e466e35d29a112480333
+Source1:	https://github.com/thom311/libnl/releases/download/libnl3_7_0/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	15f55a421a16ff4084c4a1af085c19b8
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
