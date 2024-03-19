@@ -8,22 +8,22 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.7.0
+Version:	3.9.0
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	https://github.com/thom311/libnl/releases/download/libnl3_7_0/%{name}-%{version}.tar.gz
-# Source0-md5:	b381405afd14e466e35d29a112480333
-Source1:	https://github.com/thom311/libnl/releases/download/libnl3_7_0/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	15f55a421a16ff4084c4a1af085c19b8
+Source0:	https://github.com/thom311/libnl/releases/download/libnl3_9_0/%{name}-%{version}.tar.gz
+# Source0-md5:	27bffaccbb22ab9d8cff377b320f6014
+Source1:	https://github.com/thom311/libnl/releases/download/libnl3_9_0/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	3259c70458712f34a40b8345f405f5ac
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	bison >= 2.4.0
 %{?with_net_tests:BuildRequires:	check >= 0.9.0}
 BuildRequires:	flex >= 2.5.34
-BuildRequires:	libtool
+BuildRequires:	libtool >= 2:2
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRequires:	pkgconfig
 %{?with_python:BuildRequires:	python-devel >= 1:2.6}
@@ -184,6 +184,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/nl-monitor
 %attr(755,root,root) %{_bindir}/nl-neigh-*
 %attr(755,root,root) %{_bindir}/nl-neightbl-list
+%attr(755,root,root) %{_bindir}/nl-nh-list
 %attr(755,root,root) %{_bindir}/nl-pktloc-lookup
 %attr(755,root,root) %{_bindir}/nl-qdisc-*
 %attr(755,root,root) %{_bindir}/nl-route-*
