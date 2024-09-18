@@ -1,22 +1,24 @@
 #
 # Conditional build:
 %bcond_without	apidocs		# API documentation
-%bcond_without	python		# Python netlink module
+%bcond_without	python		# Python netlink module (any)
+%bcond_without	python2		# CPython 2.x netlink module
+%bcond_without	python3		# CPython 3.x netlink module
 %bcond_without	tests		# unit tests
 %bcond_with	net_tests	# unit tests using unshare for net ns
 
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.9.0
+Version:	3.10.0
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	https://github.com/thom311/libnl/releases/download/libnl3_9_0/%{name}-%{version}.tar.gz
-# Source0-md5:	27bffaccbb22ab9d8cff377b320f6014
-Source1:	https://github.com/thom311/libnl/releases/download/libnl3_9_0/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	3259c70458712f34a40b8345f405f5ac
+Source0:	https://github.com/thom311/libnl/releases/download/libnl3_10_0/%{name}-%{version}.tar.gz
+# Source0-md5:	504f3929a3d878fcaccc8a19f1a5f449
+Source1:	https://github.com/thom311/libnl/releases/download/libnl3_10_0/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	ebbb10af7dafac18640a0974d255d2b7
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -26,10 +28,11 @@ BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool >= 2:2
 BuildRequires:	linux-libc-headers >= 6:2.6.23
 BuildRequires:	pkgconfig
-%{?with_python:BuildRequires:	python-devel >= 1:2.6}
-BuildRequires:	rpmbuild(macros) >= 1.219
+%{?with_python2:BuildRequires:	python-devel >= 1:2.7}
+%{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
+BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	sed >= 4.0
-BuildRequires:	swig-python
+BuildRequires:	swig-python >= 2
 %if 0 && %{with apidocs}
 # no docs Makefile up to 3.2.24
 BuildRequires:	asciidoc >= 8.6.5
@@ -94,16 +97,28 @@ Dokumentacja API biblioteki libnl oraz wprowadzenie w formacie HTML
 wygenerowane ze źródeł za pomocą doxygena.
 
 %package -n python-netlink
-Summary:	Python wrapper for netlink protocols
-Summary(pl.UTF-8):	Pythonowy interfejs do protokołów netlink
+Summary:	Python 2 wrapper for netlink protocols
+Summary(pl.UTF-8):	Interfejs Pythona 2 do protokołów netlink
 Group:		Libraries/Python
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description -n python-netlink
-Python wrapper for netlink protocols.
+Python 2 wrapper for netlink protocols.
 
 %description -n python-netlink -l pl.UTF-8
-Pythonowy interfejs do protokołów netlink.
+Interfejs Pythona 2 do protokołów netlink.
+
+%package -n python3-netlink
+Summary:	Python 3 wrapper for netlink protocols
+Summary(pl.UTF-8):	Interfejs Pythona 3 do protokołów netlink
+Group:		Libraries/Python
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+
+%description -n python3-netlink
+Python 3 wrapper for netlink protocols.
+
+%description -n python3-netlink -l pl.UTF-8
+Interfejs Pythona 3 do protokołów netlink.
 
 %prep
 %setup -q -a1
@@ -134,7 +149,12 @@ Pythonowy interfejs do protokołów netlink.
 cd python
 CFLAGS="%{rpmcflags}"
 LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs"
+%if %{with python2}
 %py_build
+%endif
+%if %{with python3}
+%py3_build
+%endif
 cd ..
 %endif
 
@@ -148,8 +168,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with python}
 cd python
+%if %{with python2}
 %py_install
 %py_postclean
+%endif
+%if %{with python3}
+%py3_install
+%endif
 %endif
 
 # dynamic modules
@@ -257,7 +282,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/{*.html,libnl.css,api,images,stylesheets}
 %endif
 
-%if %{with python}
+%if %{with python2}
 %files -n python-netlink
 %defattr(644,root,root,755)
 %dir %{py_sitedir}/netlink
@@ -274,4 +299,28 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py_sitedir}/netlink/route/qdisc
 %{py_sitedir}/netlink/route/qdisc/*.py[co]
 %{py_sitedir}/netlink-1.0-py*.egg-info
+%endif
+
+%if %{with python3}
+%files -n python3-netlink
+%defattr(644,root,root,755)
+%dir %{py3_sitedir}/netlink
+%attr(755,root,root) %{py3_sitedir}/netlink/_capi.cpython-*.so
+%{py3_sitedir}/netlink/*.py
+%{py3_sitedir}/netlink/__pycache__
+%dir %{py3_sitedir}/netlink/genl
+%attr(755,root,root) %{py3_sitedir}/netlink/genl/_capi.cpython-*.so
+%{py3_sitedir}/netlink/genl/*.py
+%{py3_sitedir}/netlink/genl/__pycache__
+%dir %{py3_sitedir}/netlink/route
+%attr(755,root,root) %{py3_sitedir}/netlink/route/_capi.cpython-*.so
+%{py3_sitedir}/netlink/route/*.py
+%{py3_sitedir}/netlink/route/__pycache__
+%dir %{py3_sitedir}/netlink/route/links
+%{py3_sitedir}/netlink/route/links/*.py
+%{py3_sitedir}/netlink/route/links/__pycache__
+%dir %{py3_sitedir}/netlink/route/qdisc
+%{py3_sitedir}/netlink/route/qdisc/*.py
+%{py3_sitedir}/netlink/route/qdisc/__pycache__
+%{py3_sitedir}/netlink-1.0-py*.egg-info
 %endif
