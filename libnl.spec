@@ -10,15 +10,15 @@
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
-Version:	3.11.0
+Version:	3.12.0
 Release:	1
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	https://github.com/thom311/libnl/releases/download/libnl3_11_0/%{name}-%{version}.tar.gz
-# Source0-md5:	0a5eb82b494c411931a47638cb0dba51
-Source1:	https://github.com/thom311/libnl/releases/download/libnl3_11_0/%{name}-doc-%{version}.tar.gz
-# Source1-md5:	5c74044c92f2eb08de69cce88714cd1b
+Source0:	https://github.com/thom311/libnl/releases/download/libnl3_12_0/%{name}-%{version}.tar.gz
+# Source0-md5:	f9112ca215807fe65eecd583d8f180cc
+Source1:	https://github.com/thom311/libnl/releases/download/libnl3_12_0/%{name}-doc-%{version}.tar.gz
+# Source1-md5:	befe7b001c82640f8e937c603afc7edc
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -179,6 +179,8 @@ cd python
 
 # dynamic modules
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.{la,a}
+# obsoleted by pkg-config
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -216,26 +218,26 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/nl-rule-list
 %attr(755,root,root) %{_bindir}/nl-tctree-list
 %attr(755,root,root) %{_bindir}/nl-util-addr
-%attr(755,root,root) %{_libdir}/libnl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-cli-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-cli-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-genl-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-genl-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-idiag-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-idiag-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-nf-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-nf-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-route-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-route-3.so.200
-%attr(755,root,root) %{_libdir}/libnl-xfrm-3.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libnl-xfrm-3.so.200
+%{_libdir}/libnl-3.so.*.*.*
+%ghost %{_libdir}/libnl-3.so.200
+%{_libdir}/libnl-cli-3.so.*.*.*
+%ghost %{_libdir}/libnl-cli-3.so.200
+%{_libdir}/libnl-genl-3.so.*.*.*
+%ghost %{_libdir}/libnl-genl-3.so.200
+%{_libdir}/libnl-idiag-3.so.*.*.*
+%ghost %{_libdir}/libnl-idiag-3.so.200
+%{_libdir}/libnl-nf-3.so.*.*.*
+%ghost %{_libdir}/libnl-nf-3.so.200
+%{_libdir}/libnl-route-3.so.*.*.*
+%ghost %{_libdir}/libnl-route-3.so.200
+%{_libdir}/libnl-xfrm-3.so.*.*.*
+%ghost %{_libdir}/libnl-xfrm-3.so.200
 %dir %{_libdir}/libnl
 %dir %{_libdir}/libnl/cli
 %dir %{_libdir}/libnl/cli/cls
-%attr(755,root,root) %{_libdir}/libnl/cli/cls/*.so
+%{_libdir}/libnl/cli/cls/*.so
 %dir %{_libdir}/libnl/cli/qdisc
-%attr(755,root,root) %{_libdir}/libnl/cli/qdisc/*.so
+%{_libdir}/libnl/cli/qdisc/*.so
 %{_mandir}/man8/genl-ctrl-list.8*
 %{_mandir}/man8/nl-classid-lookup.8*
 %{_mandir}/man8/nl-pktloc-lookup.8*
@@ -243,20 +245,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libnl-3.so
-%attr(755,root,root) %{_libdir}/libnl-cli-3.so
-%attr(755,root,root) %{_libdir}/libnl-genl-3.so
-%attr(755,root,root) %{_libdir}/libnl-idiag-3.so
-%attr(755,root,root) %{_libdir}/libnl-nf-3.so
-%attr(755,root,root) %{_libdir}/libnl-route-3.so
-%attr(755,root,root) %{_libdir}/libnl-xfrm-3.so
-%{_libdir}/libnl-3.la
-%{_libdir}/libnl-cli-3.la
-%{_libdir}/libnl-genl-3.la
-%{_libdir}/libnl-idiag-3.la
-%{_libdir}/libnl-nf-3.la
-%{_libdir}/libnl-route-3.la
-%{_libdir}/libnl-xfrm-3.la
+%{_libdir}/libnl-3.so
+%{_libdir}/libnl-cli-3.so
+%{_libdir}/libnl-genl-3.so
+%{_libdir}/libnl-idiag-3.so
+%{_libdir}/libnl-nf-3.so
+%{_libdir}/libnl-route-3.so
+%{_libdir}/libnl-xfrm-3.so
 %{_includedir}/libnl3
 %{_pkgconfigdir}/libnl-3.0.pc
 %{_pkgconfigdir}/libnl-cli-3.0.pc
@@ -286,13 +281,13 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python-netlink
 %defattr(644,root,root,755)
 %dir %{py_sitedir}/netlink
-%attr(755,root,root) %{py_sitedir}/netlink/_capi.so
+%{py_sitedir}/netlink/_capi.so
 %{py_sitedir}/netlink/*.py[co]
 %dir %{py_sitedir}/netlink/genl
-%attr(755,root,root) %{py_sitedir}/netlink/genl/_capi.so
+%{py_sitedir}/netlink/genl/_capi.so
 %{py_sitedir}/netlink/genl/*.py[co]
 %dir %{py_sitedir}/netlink/route
-%attr(755,root,root) %{py_sitedir}/netlink/route/_capi.so
+%{py_sitedir}/netlink/route/_capi.so
 %{py_sitedir}/netlink/route/*.py[co]
 %dir %{py_sitedir}/netlink/route/links
 %{py_sitedir}/netlink/route/links/*.py[co]
@@ -305,15 +300,15 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python3-netlink
 %defattr(644,root,root,755)
 %dir %{py3_sitedir}/netlink
-%attr(755,root,root) %{py3_sitedir}/netlink/_capi.cpython-*.so
+%{py3_sitedir}/netlink/_capi.cpython-*.so
 %{py3_sitedir}/netlink/*.py
 %{py3_sitedir}/netlink/__pycache__
 %dir %{py3_sitedir}/netlink/genl
-%attr(755,root,root) %{py3_sitedir}/netlink/genl/_capi.cpython-*.so
+%{py3_sitedir}/netlink/genl/_capi.cpython-*.so
 %{py3_sitedir}/netlink/genl/*.py
 %{py3_sitedir}/netlink/genl/__pycache__
 %dir %{py3_sitedir}/netlink/route
-%attr(755,root,root) %{py3_sitedir}/netlink/route/_capi.cpython-*.so
+%{py3_sitedir}/netlink/route/_capi.cpython-*.so
 %{py3_sitedir}/netlink/route/*.py
 %{py3_sitedir}/netlink/route/__pycache__
 %dir %{py3_sitedir}/netlink/route/links
