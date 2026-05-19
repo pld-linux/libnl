@@ -36,7 +36,7 @@ BuildRequires:	bison >= 2.4.0
 %{?with_net_tests:BuildRequires:	check >= 0.9.0}
 BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool >= 2:2
-BuildRequires:	linux-libc-headers >= 6:2.6.23
+BuildRequires:	linux-libc-headers >= 7:2.6.23
 BuildRequires:	pkgconfig
 %{?with_python2:BuildRequires:	python-devel >= 1:2.7}
 %{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
@@ -48,7 +48,7 @@ BuildRequires:	sed >= 4.0
 # no docs Makefile up to 3.2.24
 BuildRequires:	asciidoc >= 8.6.5
 BuildRequires:	asciidoc-filter-mscgen >= 1.2
-BuildRequires:	doxygen >= 1.8.0
+BuildRequires:	doxygen >= 1:1.8.0
 BuildRequires:	graphviz
 BuildRequires:	mscgen
 BuildRequires:	python-pygments
