@@ -8,6 +8,15 @@
 %bcond_without	tests		# unit tests
 %bcond_with	net_tests	# unit tests using unshare for net ns
 
+%if %{without python}
+%undefine	with_python2
+%undefine	with_python3
+%else
+%if %{without python2} && %{without python3}
+%undefine	with_python
+%endif
+%endif
+
 Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
@@ -33,7 +42,7 @@ BuildRequires:	pkgconfig
 %{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
 BuildRequires:	rpmbuild(macros) >= 1.714
 BuildRequires:	sed >= 4.0
-BuildRequires:	swig-python >= 2
+%{?with_python:BuildRequires:	swig-python >= 2}
 %if 0 && %{with apidocs}
 # no docs Makefile up to 3.2.24
 BuildRequires:	asciidoc >= 8.6.5
