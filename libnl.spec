@@ -4,6 +4,7 @@
 %bcond_without	python		# Python netlink module (any)
 %bcond_without	python2		# CPython 2.x netlink module
 %bcond_without	python3		# CPython 3.x netlink module
+%bcond_without	static_libs	# static libraries
 %bcond_without	tests		# unit tests
 %bcond_with	net_tests	# unit tests using unshare for net ns
 
@@ -136,7 +137,8 @@ Interfejs Pythona 3 do protokołów netlink.
 %{__automake}
 %configure \
 	%{!?with_apidocs:--disable-doc} \
-	--disable-silent-rules
+	--disable-silent-rules \
+	%{__enable_disable static_libs static}
 
 %{__make}
 
@@ -178,7 +180,8 @@ cd python
 %endif
 
 # dynamic modules
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.{la,a}
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.la
+%{?with_static_libs:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.,a}
 # obsoleted by pkg-config
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl*.la
 
@@ -261,6 +264,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/libnl-route-3.0.pc
 %{_pkgconfigdir}/libnl-xfrm-3.0.pc
 
+%if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libnl-3.a
@@ -270,6 +274,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libnl-nf-3.a
 %{_libdir}/libnl-route-3.a
 %{_libdir}/libnl-xfrm-3.a
+%endif
 
 %if %{with apidocs}
 %files apidocs
