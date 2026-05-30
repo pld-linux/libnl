@@ -192,7 +192,7 @@ cd python
 
 # dynamic modules
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.la
-%{?with_static_libs:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.,a}
+%{?with_static_libs:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl/cli/*/*.a}
 # obsoleted by pkg-config
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libnl*.la
 
