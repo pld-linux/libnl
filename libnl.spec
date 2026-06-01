@@ -74,7 +74,7 @@ netlink.
 Summary:	Header files for libnl library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libnl
 Group:		Development/Libraries
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description devel
 Header files for libnl library.
@@ -86,7 +86,7 @@ Pliki nagłówkowe biblioteki libnl.
 Summary:	Static libnl library
 Summary(pl.UTF-8):	Statyczna biblioteka libnl
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
+Requires:	%{name}-devel%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description static
 Static libnl library.
@@ -112,7 +112,7 @@ wygenerowane ze źródeł za pomocą doxygena.
 Summary:	Python 2 wrapper for netlink protocols
 Summary(pl.UTF-8):	Interfejs Pythona 2 do protokołów netlink
 Group:		Libraries/Python
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description -n python-netlink
 Python 2 wrapper for netlink protocols.
@@ -124,7 +124,7 @@ Interfejs Pythona 2 do protokołów netlink.
 Summary:	Python 3 wrapper for netlink protocols
 Summary(pl.UTF-8):	Interfejs Pythona 3 do protokołów netlink
 Group:		Libraries/Python
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description -n python3-netlink
 Python 3 wrapper for netlink protocols.
