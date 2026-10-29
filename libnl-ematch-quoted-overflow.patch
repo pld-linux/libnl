@@ -1,0 +1,30 @@
+diff -urN a/lib/route/cls/ematch_grammar.l b/lib/route/cls/ematch_grammar.l
+--- a/lib/route/cls/ematch_grammar.l	2025-11-30 08:47:11.000000000 +0100
++++ b/lib/route/cls/ematch_grammar.l	2026-10-29 01:59:24.692823042 +0100
+@@ -47,9 +47,23 @@
+ 			}
+ 
+ <QUOTE>[^\\\n\"]+	{
+-				memcpy(yylval->q.data + yylval->q.index, yytext,
+-				       strlen(yytext));
+-				yylval->q.index += strlen(yytext);
++				size_t need = (size_t) yylval->q.index + yyleng + 1;
++
++				if (need > yylval->q.len) {
++					char *p = realloc(yylval->q.data, need);
++
++					if (!p) {
++						free(yylval->q.data);
++						yylval->q.data = NULL;
++						return ERROR;
++					}
++					memset(p + yylval->q.len, 0, need - yylval->q.len);
++					yylval->q.data = p;
++					yylval->q.len = need;
++				}
++
++				memcpy(yylval->q.data + yylval->q.index, yytext, yyleng);
++				yylval->q.index += yyleng;
+ 			}
+ 
+ <QUOTE>\"		{

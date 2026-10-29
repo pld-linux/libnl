@@ -2,17 +2,15 @@
 # Conditional build:
 %bcond_without	apidocs		# API documentation
 %bcond_without	python		# Python netlink module (any)
-%bcond_without	python2		# CPython 2.x netlink module
 %bcond_without	python3		# CPython 3.x netlink module
 %bcond_without	static_libs	# static libraries
 %bcond_without	tests		# unit tests
 %bcond_with	net_tests	# unit tests using unshare for net ns
 
 %if %{without python}
-%undefine	with_python2
 %undefine	with_python3
 %else
-%if %{without python2} && %{without python3}
+%if %{without python3}
 %undefine	with_python
 %endif
 %endif
@@ -21,7 +19,7 @@ Summary:	Netlink sockets library
 Summary(pl.UTF-8):	Biblioteka do obsługi gniazd netlink
 Name:		libnl
 Version:	3.12.0
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPL v2.1
 Group:		Libraries
@@ -29,6 +27,10 @@ Source0:	https://github.com/thom311/libnl/releases/download/libnl3_12_0/%{name}-
 # Source0-md5:	f9112ca215807fe65eecd583d8f180cc
 Source1:	https://github.com/thom311/libnl/releases/download/libnl3_12_0/%{name}-doc-%{version}.tar.gz
 # Source1-md5:	befe7b001c82640f8e937c603afc7edc
+# quoted ematch strings over 32 bytes overflow the lexer buffer; https://github.com/thom311/libnl/issues/457
+Patch0:		%{name}-ematch-quoted-overflow.patch
+# Python 2 C-API calls in the swig interface; https://github.com/thom311/libnl/pull/463
+Patch1:		%{name}-python3-capi.patch
 URL:		http://www.infradead.org/~tgr/libnl/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -38,7 +40,6 @@ BuildRequires:	flex >= 2.5.34
 BuildRequires:	libtool >= 2:2
 BuildRequires:	linux-libc-headers >= 7:2.6.23
 BuildRequires:	pkgconfig
-%{?with_python2:BuildRequires:	python-devel >= 1:2.7}
 %{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
 BuildRequires:	rpm-build >= 4.6
 %{?with_python:BuildRequires:	rpm-pythonprov}
@@ -57,6 +58,7 @@ BuildRequires:	source-highlight
 BuildRequires:	tetex-dvips
 BuildRequires:	tetex-format-latex
 %endif
+Obsoletes:	python-netlink < 1:3.12.0-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -108,18 +110,6 @@ generated from sources by doxygen.
 Dokumentacja API biblioteki libnl oraz wprowadzenie w formacie HTML
 wygenerowane ze źródeł za pomocą doxygena.
 
-%package -n python-netlink
-Summary:	Python 2 wrapper for netlink protocols
-Summary(pl.UTF-8):	Interfejs Pythona 2 do protokołów netlink
-Group:		Libraries/Python
-Requires:	%{name}%{?_isa} = %{epoch}:%{version}-%{release}
-
-%description -n python-netlink
-Python 2 wrapper for netlink protocols.
-
-%description -n python-netlink -l pl.UTF-8
-Interfejs Pythona 2 do protokołów netlink.
-
 %package -n python3-netlink
 Summary:	Python 3 wrapper for netlink protocols
 Summary(pl.UTF-8):	Interfejs Pythona 3 do protokołów netlink
@@ -135,6 +125,8 @@ Interfejs Pythona 3 do protokołów netlink.
 %prep
 %setup -q -a1
 %{__mv} libnl-doc-%{version} doc
+%patch -P0 -p1
+%patch -P1 -p1
 
 %if %{without net_tests}
 %{__sed} -i -e 's/^AM_CONDITIONAL(WITH_CHECK.*/AM_CONDITIONAL(WITH_CHECK, false)/' configure.ac
@@ -162,9 +154,6 @@ Interfejs Pythona 3 do protokołów netlink.
 cd python
 CFLAGS="%{rpmcflags}"
 LDFLAGS="%{rpmldflags} -L$(pwd)/../lib/.libs"
-%if %{with python2}
-%py_build
-%endif
 %if %{with python3}
 %py3_build
 %endif
@@ -181,10 +170,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with python}
 cd python
-%if %{with python2}
-%py_install
-%py_postclean
-%endif
 %if %{with python3}
 %py3_install
 %endif
@@ -291,25 +276,6 @@ rm -rf $RPM_BUILD_ROOT
 %files apidocs
 %defattr(644,root,root,755)
 %doc doc/{*.html,libnl.css,api,images,stylesheets}
-%endif
-
-%if %{with python2}
-%files -n python-netlink
-%defattr(644,root,root,755)
-%dir %{py_sitedir}/netlink
-%{py_sitedir}/netlink/_capi.so
-%{py_sitedir}/netlink/*.py[co]
-%dir %{py_sitedir}/netlink/genl
-%{py_sitedir}/netlink/genl/_capi.so
-%{py_sitedir}/netlink/genl/*.py[co]
-%dir %{py_sitedir}/netlink/route
-%{py_sitedir}/netlink/route/_capi.so
-%{py_sitedir}/netlink/route/*.py[co]
-%dir %{py_sitedir}/netlink/route/links
-%{py_sitedir}/netlink/route/links/*.py[co]
-%dir %{py_sitedir}/netlink/route/qdisc
-%{py_sitedir}/netlink/route/qdisc/*.py[co]
-%{py_sitedir}/netlink-1.0-py*.egg-info
 %endif
 
 %if %{with python3}

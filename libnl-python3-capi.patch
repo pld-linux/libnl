@@ -1,0 +1,85 @@
+From 9cc3dbb569864fa8fb5a0d5a0710b5c63c08a885 Mon Sep 17 00:00:00 2001
+From: Boris P <borisp@tekeli.org>
+Date: Fri, 23 Oct 2026 21:14:19 +0200
+Subject: [PATCH] python: replace removed Python 2 C-API calls in swig
+ interface files
+
+PyInt_Check/AsLong/FromLong and PyString_Check/AsString do not exist in
+the Python 3 C-API. Before GCC 14 the generated wrappers only warned;
+with implicit function declarations becoming hard errors the bindings
+fail to build (seen with GCC 16 on Python 3.9).
+
+Replace with PyLong_* respectively PyUnicode_Check/PyUnicode_AsUTF8.
+Tested downstream in Macaroni OS: bindings build and all three
+netlink.*_capi modules import cleanly.
+
+PLD: take the str length from PyUnicode_AsUTF8AndSize(); Py_SIZE() of a
+str is its character count and truncated non-ASCII attributes.
+---
+diff -urN a/python/netlink/capi.i b/python/netlink/capi.i
+--- a/python/netlink/capi.i	2016-12-10 16:04:32.000000000 +0100
++++ b/python/netlink/capi.i	2026-10-29 02:02:23.902273433 +0100
+@@ -625,8 +625,8 @@
+ 	}
+ 	resobj = PyObject_CallObject(funcobj, cbparobj);
+ 	Py_DECREF(cbparobj);
+-	if (resobj && PyInt_Check(resobj))
+-		result = (int)PyInt_AsLong(resobj);
++	if (resobj && PyLong_Check(resobj))
++		result = (int)PyLong_AsLong(resobj);
+ 	else
+ 		result = NL_STOP;
+ 	Py_XDECREF(resobj);
+@@ -661,8 +661,8 @@
+ 	}
+ 	resobj = PyObject_CallObject(funcobj, cbparobj);
+ 	Py_DECREF(cbparobj);
+-	if (resobj && PyInt_Check(resobj))
+-		result = (int)PyInt_AsLong(resobj);
++	if (resobj && PyLong_Check(resobj))
++		result = (int)PyLong_AsLong(resobj);
+ 	else
+ 		result = NL_STOP;
+ 	Py_XDECREF(resobj);
+@@ -814,11 +814,17 @@
+ extern int		nla_type(const struct nlattr *);
+ 
+ %typemap(in) (int, const void *) {
+-	$1 = Py_SIZE($input);
+ 	if (PyByteArray_Check($input)) {
++		$1 = PyByteArray_Size($input);
+ 		$2 = ($2_ltype)PyByteArray_AsString($input);
+-	} else if (PyString_Check($input)) {
+-		$2 = ($2_ltype)PyString_AsString($input);
++	} else if (PyUnicode_Check($input)) {
++		Py_ssize_t len;
++
++		/* Py_SIZE() of a str counts characters, not UTF-8 bytes */
++		$2 = ($2_ltype)PyUnicode_AsUTF8AndSize($input, &len);
++		if (!$2)
++			SWIG_fail;
++		$1 = len;
+ 	} else
+ 		SWIG_exception(SWIG_TypeError,
+ 			       "pointer must be bytearray or string.");
+@@ -887,7 +893,7 @@
+ 		attrs = PyDict_New();
+ 		for (i = 0; i <= max; i++)
+ 			if (tb_msg[i]) {
+-				k = PyInt_FromLong((long)i);
++				k = PyLong_FromLong((long)i);
+ 				v = SWIG_NewPointerObj(SWIG_as_voidptr(tb_msg[i]), SWIGTYPE_p_nlattr, 0 |  0 );
+ 				PyDict_SetItem(attrs, k, v);
+ 			}
+diff -urN a/python/netlink/genl/capi.i b/python/netlink/genl/capi.i
+--- a/python/netlink/genl/capi.i	2016-12-10 16:04:32.000000000 +0100
++++ b/python/netlink/genl/capi.i	2026-10-29 02:02:23.830399165 +0100
+@@ -99,7 +99,7 @@
+ 		attrs = PyDict_New();
+ 		for (i = 0; i <= max; i++)
+ 			if (tb_msg[i]) {
+-				k = PyInt_FromLong((long)i);
++				k = PyLong_FromLong((long)i);
+ 				v = SWIG_NewPointerObj(SWIG_as_voidptr(tb_msg[i]), SWIGTYPE_p_nlattr, 0 |  0 );
+ 				PyDict_SetItem(attrs, k, v);
+ 			}
